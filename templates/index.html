@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="丞石建築開發股份有限公司 不動產資訊 Portal 網站 - 掌握最新黃仁勳 AI 前瞻與不動產數位轉型情報。">
+    <title>丞石建築開發股份有限公司</title>
+
+    <!-- 1. Bootstrap 5.3 CDN (CSS) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- 2. Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- 3. Google Fonts: Noto Sans TC & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap"
+        rel="stylesheet">
+
+    <!-- 4. 自訂企業視覺與高對比閱讀樣式 (支援深色/淺色主題雙模式) -->
+    <style>
+        :root,
+        [data-theme="light"] {
+            --bg-primary: #F8FAFC;
+            /* 清爽亮白灰色底色 */
+            --bg-card: #FFFFFF;
+            /* 純白卡片 */
+            --bg-card-hover: #F1F5F9;
+            /* 懸停卡片 */
+            --bg-hero: linear-gradient(135deg, #E0F2FE 0%, #F0F9FF 60%, #FFFFFF 100%);
+            --bg-summary: #F1F5F9;
+            --bg-navbar: #FFFFFF;
+            --bg-offcanvas: #FFFFFF;
+            --bg-footer: #F1F5F9;
+            --bg-article-header: #E2E8F0;
+            --bg-analysis-card: #F8FAFC;
+            --bg-reference-box: #F1F5F9;
+            --accent-cyan: #0284C7;
+            /* 高對比寶藍/深青色 */
+            --accent-yellow: #D97706;
+            --text-white: #0F172A;
+            /* 深石墨灰標題 */
+            --text-light-grey: #334155;
+            /* 深灰內文 */
+            --text-sub-grey: #475569;
+            /* 深沉次要灰色 (提高對比) */
+            --text-heading: #0F172A;
+            --border-color: #CBD5E1;
+            /* 淺色邊線 */
+            --card-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+            --card-shadow-hover: 0 10px 24px rgba(2, 132, 199, 0.15);
+            --theme-btn-bg: #E0F2FE;
+            --theme-btn-border: #0284C7;
+            --theme-btn-color: #0284C7;
+        }
+
+        /* 淺色模式下解決亮藍色難以閱讀與文字對比問題 */
+        [data-theme="light"] .text-light {
+            color: #334155 !important;
+        }
+
+        [data-theme="light"] .text-info {
+            color: #1D4ED8 !important;
+            /* 改用沉穩深皇家藍，大幅提升色彩識別度 */
+        }
+
+        [data-theme="light"] .btn-outline-info {
+            color: #1D4ED8 !important;
+            border-color: #1D4ED8 !important;
+        }
+
+        [data-theme="light"] .btn-outline-info:hover {
+            background-color: #1D4ED8 !important;
+            border-color: #1D4ED8 !important;
+            color: #FFFFFF !important;
+        }
+
+        [data-theme="light"] .text-theme-muted {
+            color: #475569 !important;
+            /* 深石墨灰 */
+            font-weight: 600;
+        }
+
+        [data-theme="light"] .opacity-75,
+        [data-theme="light"] .opacity-85,
+        [data-theme="light"] .opacity-90 {
+            opacity: 1 !important;
+        }
+
+        [data-theme="light"] .sidebar-link small {
+            color: #475569 !important;
+            /* 側邊欄日期與主講人資訊改用沈穩清晰的深灰色 */
+            font-weight: 500;
+        }
+
+        [data-theme="light"] .sidebar-link small i {
+            color: #2563EB !important;
+            /* 小圖示保留亮藍強調 */
+        }
+
+        [data-theme="light"] .sidebar-link:hover small {
+            color: #1D4ED8 !important;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0B132B;
+            /* 極深藍底色 */
+            --bg-card: #1C2541;
+            /* 鋼鐵藍灰卡片 */
+            --bg-card-hover: #2A365C;
+            /* 懸停卡片 */
+            --bg-hero: linear-gradient(135deg, #0B132B 0%, #1C2541 60%, #152244 100%);
+            --bg-summary: #121A30;
+            --bg-navbar: #0B132B;
+            --bg-offcanvas: #0B132B;
+            --bg-footer: #060B18;
+            --bg-article-header: #16203B;
+            --bg-analysis-card: #131C35;
+            --bg-reference-box: rgba(28, 37, 65, 0.7);
+            --accent-cyan: #38BDF8;
+            /* 科技亮藍 */
+            --accent-yellow: #FACC15;
+            /* 高亮黃 */
+            --text-white: #FFFFFF;
+            /* 純白文字 */
+            --text-light-grey: #E2E8F0;
+            /* 亮灰文字 */
+            --text-sub-grey: #CBD5E1;
+            /* 次要亮灰 */
+            --text-heading: #FFFFFF;
+            --border-color: #3B4B75;
+            /* 邊線顏色 */
+            --card-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+            --card-shadow-hover: 0 12px 28px rgba(0, 0, 0, 0.5);
+            --theme-btn-bg: rgba(56, 189, 248, 0.15);
+            --theme-btn-border: #38BDF8;
+            --theme-btn-color: #38BDF8;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-light-grey);
+            font-size: 1.15rem;
+            /* 全頁基礎字級 18.4px */
+            line-height: 1.7;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* 頂部導覽列 (Navbar) */
+        .navbar-custom {
+            background-color: var(--bg-navbar);
+            border-bottom: 2px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+            padding: 0.8rem 0;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            color: var(--text-heading) !important;
+            font-size: 1.45rem;
+            letter-spacing: 0.5px;
+        }
+
+        .navbar-brand i {
+            color: var(--accent-cyan);
+        }
+
+        /* 主題切換按鈕 (Theme Toggle Button) */
+        .btn-theme-toggle {
+            background-color: var(--theme-btn-bg);
+            color: var(--theme-btn-color);
+            border: 2px solid var(--theme-btn-border);
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 0.45rem 1rem;
+            border-radius: 8px;
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+
+        .btn-theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+            color: var(--theme-btn-color);
+        }
+
+        /* 側欄選單與按鈕樣式 */
+        .btn-sidebar-toggle {
+            background-color: var(--theme-btn-bg);
+            color: var(--accent-cyan);
+            border: 2px solid var(--accent-cyan);
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 0.5rem 1.1rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-sidebar-toggle:hover {
+            background-color: var(--accent-cyan);
+            color: #FFFFFF;
+            transform: scale(1.03);
+        }
+
+        .sidebar-link {
+            transition: all 0.2s ease-in-out;
+            color: var(--text-heading) !important;
+            cursor: pointer;
+            border-left: 4px solid transparent !important;
+        }
+
+        .sidebar-link:hover,
+        .sidebar-link.active {
+            background-color: var(--theme-btn-bg) !important;
+            color: var(--accent-cyan) !important;
+            border-left: 4px solid var(--accent-cyan) !important;
+        }
+
+        /* Drawer 在淺色模式下的適應 */
+        .offcanvas-custom {
+            background-color: var(--bg-offcanvas) !important;
+            color: var(--text-heading) !important;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        [data-theme="light"] .offcanvas {
+            background-color: var(--bg-offcanvas) !important;
+            color: var(--text-heading) !important;
+        }
+
+        [data-theme="light"] .offcanvas .btn-close {
+            filter: none;
+        }
+
+        [data-theme="dark"] .offcanvas .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+
+        /* Hero 英雄公告區 */
+        .hero-section {
+            background: var(--bg-hero);
+            border-bottom: 2px solid var(--border-color);
+            padding: 3.5rem 0;
+            position: relative;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .hero-badge {
+            background-color: var(--theme-btn-bg);
+            color: var(--accent-cyan);
+            border: 2px solid var(--accent-cyan);
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            display: inline-block;
+        }
+
+        .hero-title {
+            font-weight: 900;
+            font-size: 2.5rem;
+            color: var(--text-heading);
+            line-height: 1.3;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-light-grey);
+            line-height: 1.8;
+            font-weight: 500;
+        }
+
+        .hero-stat-card {
+            background-color: var(--bg-card);
+            border: 2px solid var(--accent-cyan);
+            color: var(--text-heading) !important;
+            font-size: 1.15rem;
+            font-weight: 700;
+            padding: 0.75rem 1.25rem;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* 分類標題區 */
+        .section-header {
+            margin-bottom: 2rem;
+            border-left: 6px solid var(--accent-cyan);
+            padding-left: 1.25rem;
+        }
+
+        .section-header h2 {
+            font-weight: 800;
+            font-size: 1.9rem;
+            color: var(--text-heading);
+        }
+
+        /* 總覽卡片設計 */
+        .portal-card {
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 14px;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background-color 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+
+        .portal-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-cyan);
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        .portal-card-cover {
+            height: 220px;
+            object-fit: cover;
+            width: 100%;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .portal-card .card-body {
+            padding: 1.75rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .portal-card-title {
+            color: var(--text-heading) !important;
+            transition: color 0.2s ease;
+        }
+
+        .portal-card-title:hover {
+            color: var(--accent-cyan) !important;
+        }
+
+        /* 標籤 Tag 樣式 */
+        .tag-badge {
+            background-color: var(--theme-btn-bg);
+            color: var(--accent-cyan);
+            font-size: 0.95rem;
+            font-weight: 700;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            margin-right: 0.4rem;
+            margin-bottom: 0.4rem;
+            display: inline-block;
+            border: 1px solid var(--theme-btn-border);
+        }
+
+        /* 摘要專用方塊 */
+        .summary-box {
+            background-color: var(--bg-summary);
+            border: 2px solid var(--border-color);
+            padding: 1.25rem;
+            border-radius: 10px;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .summary-text {
+            color: var(--text-light-grey) !important;
+        }
+
+        /* 按鈕樣式 */
+        .btn-custom-readmore {
+            background-color: var(--accent-cyan);
+            color: #FFFFFF !important;
+            font-weight: 800;
+            font-size: 1.1rem;
+            padding: 0.65rem 1.4rem;
+            border-radius: 8px;
+            border: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-custom-readmore:hover {
+            opacity: 0.92;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+            color: #FFFFFF !important;
+        }
+
+        .btn-custom-back {
+            background-color: var(--bg-card);
+            color: var(--text-heading) !important;
+            border: 2px solid var(--border-color);
+            font-weight: 700;
+            padding: 0.55rem 1.2rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn-custom-back:hover {
+            background-color: var(--accent-cyan);
+            color: #FFFFFF !important;
+            border-color: var(--accent-cyan);
+        }
+
+        .btn-outline-info {
+            color: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            border-width: 2px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-outline-info:hover {
+            background-color: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            color: #FFFFFF !important;
+        }
+
+        /* 完整文章內頁專用樣式 */
+        .article-page-header {
+            background-color: var(--bg-article-header);
+            border-bottom: 2px solid var(--border-color);
+            padding: 2.5rem 0;
+            margin-bottom: 2.5rem;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .article-cover-img {
+            width: 100%;
+            max-height: 480px;
+            object-fit: cover;
+            border-radius: 14px;
+            border: 2px solid var(--border-color);
+            box-shadow: var(--card-shadow);
+        }
+
+        .article-paragraph {
+            font-size: 1.2rem;
+            line-height: 1.95;
+            color: var(--text-light-grey);
+            margin-bottom: 1.75rem;
+            text-align: justify;
+        }
+
+        .analysis-card {
+            background-color: var(--bg-analysis-card);
+            border-left: 5px solid var(--accent-cyan);
+            border-top: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .analysis-card-title {
+            color: var(--accent-cyan) !important;
+        }
+
+        .analysis-card-desc {
+            color: var(--text-light-grey) !important;
+        }
+
+        .reference-box {
+            background-color: var(--bg-reference-box) !important;
+            border-color: var(--border-color) !important;
+            transition: background-color 0.3s ease;
+        }
+
+        /* 頁尾 Footer */
+        .footer-custom {
+            background-color: var(--bg-footer);
+            border-top: 2px solid var(--border-color);
+            color: var(--text-sub-grey);
+            padding: 2.2rem 0;
+            margin-top: auto;
+            font-size: 1.05rem;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        /* 語意輔助類別 (通用深淺色適應) */
+        .text-theme-heading {
+            color: var(--text-heading) !important;
+        }
+
+        .text-theme-body {
+            color: var(--text-light-grey) !important;
+        }
+
+        .text-theme-muted {
+            color: var(--text-sub-grey) !important;
+        }
+
+        .bg-theme-card {
+            background-color: var(--bg-card) !important;
+        }
+
+        /* 頁面切換與淡入動畫 */
+        .view-section {
+            display: none;
+        }
+
+        .view-section.active {
+            display: block;
+            animation: fadeIn 0.35s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            body {
+                font-size: 1.1rem;
+            }
+
+            .hero-title {
+                font-size: 1.9rem;
+            }
+
+            .hero-section {
+                padding: 2rem 0;
+                text-align: center;
+            }
+
+            .section-header {
+                text-align: left;
+            }
+
+            .portal-card {
+                margin-bottom: 1.25rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ========================================================================= -->
+    <!-- 頂部導覽列 Navbar -->
+    <!-- ========================================================================= -->
+    <nav class="navbar navbar-dark navbar-custom">
+        <div class="container d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <!-- 左側側欄開啟按鈕 -->
+                <button class="btn btn-sidebar-toggle d-flex align-items-center gap-2 me-3" type="button"
+                    data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
+                    <i class="bi bi-list fs-2"></i>
+                    <span>選單</span>
+                </button>
+
+                <!-- 品牌 Logo 與名稱 (點擊返回總覽) -->
+                <a class="navbar-brand d-flex align-items-center gap-2" href="#overview">
+                    <i class="bi bi-building-gear fs-2"></i>
+                    <span>丞石建築開發股份有限公司</span>
+                </a>
+            </div>
+
+            <!-- 右側返回總覽/主題切換/即時更新標示 -->
+            <div class="d-flex align-items-center gap-3">
+                <a href="#overview" class="btn btn-custom-back d-none d-sm-inline-flex align-items-center gap-2">
+                    <i class="bi bi-grid-fill text-info"></i>
+                    <span>總覽首頁</span>
+                </a>
+
+                <!-- 深色 / 淺色模式切換按鈕 (預設淺色模式，顯示切換至深色按鈕) -->
+                <button id="theme-toggle-btn" class="btn btn-theme-toggle d-flex align-items-center gap-2" type="button"
+                    title="切換深色/淺色模式">
+                    <i class="bi bi-moon-stars-fill fs-5 text-primary" id="theme-toggle-icon"></i>
+                    <span id="theme-toggle-text" class="d-none d-sm-inline fw-bold">深色模式</span>
+                </button>
+
+                <div class="d-none d-md-flex align-items-center gap-2 text-info fw-bold fs-6">
+                    <i class="bi bi-clock-history fs-5"></i>
+                    <span>今日即時更新</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- ========================================================================= -->
+    <!-- 左側選單抽屜 (Offcanvas Sidebar Drawer) -->
+    <!-- ========================================================================= -->
+    <div class="offcanvas offcanvas-start border-end border-secondary border-2 offcanvas-custom" tabindex="-1"
+        id="sidebarMenu" aria-labelledby="sidebarMenuLabel" style="width: 360px;">
+        <div class="offcanvas-header border-bottom border-secondary pb-3 justify-content-between align-items-center">
+            <h5 class="offcanvas-title text-theme-heading fw-bold m-0 fs-5" id="sidebarMenuLabel">文章目錄選單</h5>
+            <button type="button" class="btn-close fs-5" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+
+        <div class="offcanvas-body p-4">
+            <!-- 總覽首頁導覽按鈕 -->
+            <a href="#overview"
+                class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 p-3 fs-5 fw-bold d-flex align-items-center gap-3 sidebar-link mb-4 active"
+                id="menu-link-overview">
+                <i class="bi bi-house-door-fill text-info fs-5"></i>
+                <span>總覽首頁</span>
+            </a>
+
+            <hr class="border-secondary my-3">
+
+            <!-- 分類一：黃仁勳與 AI 趨勢 -->
+            <div class="text-info fw-bold fs-5 mb-2 text-uppercase d-flex align-items-center gap-2 px-1">
+                <i class="bi bi-cpu-fill text-info fs-5"></i>
+                <span>黃仁勳與 AI 趨勢</span>
+            </div>
+
+            <!-- 子分類 1.1：YouTube 影音 -->
+            <div class="text-theme-muted fw-bold fs-6 mb-2 ps-2 text-uppercase d-flex align-items-center gap-1">
+                <i class="bi bi-youtube text-danger me-1"></i>
+                <span>YouTube 影音</span>
+            </div>
+            <div class="list-group list-group-flush mb-3 gap-1 ps-2">
+                {% for video in data.ai_trends_videos %}
+                <a href="#article/{{ video.id }}"
+                    class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 p-2.5 sidebar-link"
+                    id="menu-link-{{ video.id }}">
+                    <div class="fw-semibold text-truncate fs-6"><i
+                            class="bi bi-play-circle-fill text-danger me-2"></i>{{ video.title }}</div>
+                    <small class="text-info ps-4 d-block mt-1 fw-semibold" style="font-size: 0.85rem;"><i
+                            class="bi bi-calendar3 me-1"></i>{{ video.date }}</small>
+                </a>
+                {% endfor %}
+            </div>
+
+            <!-- 子分類 1.2：新聞報導 -->
+            <div class="text-theme-muted fw-bold fs-6 mb-2 ps-2 text-uppercase d-flex align-items-center gap-1">
+                <i class="bi bi-newspaper text-info me-1"></i>
+                <span>新聞報導</span>
+            </div>
+            <div class="list-group list-group-flush mb-4 gap-1 ps-2">
+                {% for news in data.ai_trends_news %}
+                <a href="#article/{{ news.id }}"
+                    class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 p-2.5 sidebar-link"
+                    id="menu-link-{{ news.id }}">
+                    <div class="fw-semibold text-truncate fs-6"><i class="bi bi-newspaper text-info me-2"></i>{{
+                        news.title }}</div>
+                    <small class="text-info ps-4 d-block mt-1 fw-semibold" style="font-size: 0.85rem;"><i
+                            class="bi bi-calendar3 me-1"></i>{{ news.date }}</small>
+                </a>
+                {% endfor %}
+            </div>
+
+            <hr class="border-secondary my-3">
+
+            <hr class="border-secondary my-3">
+
+            <!-- 分類二：不動產 新聞 -->
+            <div class="text-info fw-bold fs-5 mb-3 text-uppercase d-flex align-items-center gap-2 px-1">
+                <i class="bi bi-building text-warning fs-5"></i>
+                <span>不動產 新聞</span>
+            </div>
+            <div class="list-group list-group-flush mb-4 gap-1">
+                {% for news in data.ai_real_estate_news %}
+                <a href="#article/{{ news.id }}"
+                    class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 p-3 sidebar-link"
+                    id="menu-link-{{ news.id }}">
+                    <div class="fw-semibold text-truncate fs-6"><i class="bi bi-file-text-fill text-warning me-2"></i>{{
+                        news.title }}</div>
+                    <small class="text-info ps-4 d-block mt-1 fw-semibold" style="font-size: 0.85rem;"><i
+                            class="bi bi-calendar3 me-1"></i>{{ news.date }}</small>
+                </a>
+                {% endfor %}
+            </div>
+
+            <hr class="border-secondary my-3">
+
+            <!-- 分類三：水泥/鋼筋價格 新聞 -->
+            <div class="text-info fw-bold fs-5 mb-3 text-uppercase d-flex align-items-center gap-2 px-1">
+                <i class="bi bi-box-seam text-success fs-5"></i>
+                <span>水泥/鋼筋價格 新聞</span>
+            </div>
+
+            <!-- 子分類 3.1：水泥價格 -->
+            <div class="text-theme-muted fw-bold fs-6 mb-2 ps-2 text-uppercase d-flex align-items-center gap-1">
+                <i class="bi bi-bricks text-success me-1"></i>
+                <span>水泥價格</span>
+            </div>
+            <div class="list-group list-group-flush mb-4 gap-1 ps-2">
+                {% for news in data.cement_price_news %}
+                <a href="#article/{{ news.id }}"
+                    class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 p-2.5 sidebar-link"
+                    id="menu-link-{{ news.id }}">
+                    <div class="fw-semibold text-truncate fs-6"><i class="bi bi-file-text-fill text-success me-2"></i>{{
+                        news.title }}</div>
+                    <small class="text-info ps-4 d-block mt-1 fw-semibold" style="font-size: 0.85rem;"><i
+                            class="bi bi-calendar3 me-1"></i>{{ news.date }}</small>
+                </a>
+                {% endfor %}
+            </div>
+
+            <!-- 子分類 3.2：鋼筋價格 -->
+            <div class="text-theme-muted fw-bold fs-6 mb-2 ps-2 text-uppercase d-flex align-items-center gap-1">
+                <i class="bi bi-layers-half text-success me-1"></i>
+                <span>鋼筋價格</span>
+            </div>
+            <div class="list-group list-group-flush mb-4 gap-1 ps-2">
+                {% for news in data.rebar_price_news %}
+                <a href="#article/{{ news.id }}"
+                    class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 p-2.5 sidebar-link"
+                    id="menu-link-{{ news.id }}">
+                    <div class="fw-semibold text-truncate fs-6"><i class="bi bi-file-text-fill text-success me-2"></i>{{
+                        news.title }}</div>
+                    <small class="text-info ps-4 d-block mt-1 fw-semibold" style="font-size: 0.85rem;"><i
+                            class="bi bi-calendar3 me-1"></i>{{ news.date }}</small>
+                </a>
+                {% endfor %}
+            </div>
+
+            <!-- 底部返回按鈕 -->
+            <div class="pt-3 border-top border-secondary mt-auto">
+                <a href="#overview"
+                    class="btn btn-outline-info w-100 py-2.5 fs-6 fw-bold d-flex align-items-center justify-content-center gap-2"
+                    data-bs-dismiss="offcanvas">
+                    <i class="bi bi-arrow-left-circle fs-5"></i>
+                    <span>返回總覽頁面</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- 視圖一：總覽首頁 (Dashboard / Overview) -->
+    <!-- ========================================================================= -->
+    <div id="view-overview" class="view-section active">
+
+        <!-- Hero 英雄公告區 -->
+        <header class="hero-section">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-10 col-xl-9">
+                        <h1 class="hero-title mb-3">
+                            {{ data.hero.title }}
+                        </h1>
+                        <p class="hero-subtitle mb-4">
+                            {{ data.hero.subtitle }}
+                        </p>
+
+                        <div class="d-flex flex-wrap gap-3">
+                            <div class="hero-stat-card d-flex align-items-center gap-2">
+                                <i class="bi bi-cpu-fill text-info fs-4"></i>
+                                <span>黃仁勳與 AI 趨勢</span>
+                            </div>
+                            <div class="hero-stat-card d-flex align-items-center gap-2">
+                                <i class="bi bi-building text-warning fs-4"></i>
+                                <span>不動產 新聞</span>
+                            </div>
+                            <div class="hero-stat-card d-flex align-items-center gap-2">
+                                <i class="bi bi-box-seam text-success fs-4"></i>
+                                <span>水泥/鋼筋價格 新聞</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主要卡片網格區域 -->
+        <main class="container py-5">
+
+            <!-- 分類一：黃仁勳與 AI 趨勢卡片區段 -->
+            <section id="category-ai-trends" class="mb-5">
+                <div class="section-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="d-flex align-items-center gap-2 mb-1">
+                            <i class="bi bi-cpu-fill text-info fs-2"></i> 黃仁勳與 AI 趨勢
+                        </h2>
+                        <p class="text-theme-body mb-0 fs-6">收錄 NVIDIA 執行長黃仁勳專題演講精華影片與臺灣 AI 前瞻趨勢報導。</p>
+                    </div>
+                </div>
+
+                <!-- 子區塊 1.1：YouTube 影音 -->
+                <div class="mb-5">
+                    <div
+                        class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-youtube text-danger fs-3"></i>
+                            <h3 class="h4 fw-bold text-theme-heading mb-0">YouTube 影音</h3>
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        {% for video in data.ai_trends_videos %}
+                        <div class="col-12 col-md-6">
+                            <article class="portal-card">
+                                <div class="position-relative">
+                                    <img src="{{ video.cover_image }}" class="portal-card-cover" alt="{{ video.title }}"
+                                        loading="lazy">
+                                    <div class="position-absolute top-50 start-50 translate-middle">
+                                        <a href="#article/{{ video.id }}"
+                                            class="btn btn-danger rounded-circle p-3 shadow-lg opacity-90">
+                                            <i class="bi bi-play-fill fs-2"></i>
+                                        </a>
+                                    </div>
+                                    <span
+                                        class="position-absolute bottom-0 end-0 bg-dark text-white px-2.5 py-1 m-2 rounded fs-6 fw-semibold opacity-85">
+                                        <i class="bi bi-clock me-1"></i> {{ video.duration }}
+                                    </span>
+                                </div>
+
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2 fs-6">
+                                        <div class="text-info fw-bold">
+                                            <i class="bi bi-calendar3 me-1"></i> {{ video.date }}
+                                        </div>
+                                    </div>
+
+                                    <h3 class="h4 fw-bold portal-card-title my-3" style="line-height: 1.4;">
+                                        <a href="#article/{{ video.id }}"
+                                            class="portal-card-title text-decoration-none">
+                                            {{ video.title }}
+                                        </a>
+                                    </h3>
+
+                                    <div class="mb-3">
+                                        {% for tag in video.tags %}
+                                        <span class="tag-badge">{{ tag }}</span>
+                                        {% endfor %}
+                                    </div>
+
+                                    <div class="summary-box mb-4 mt-auto">
+                                        <div
+                                            class="text-theme-heading fw-bold fs-6 mb-2 d-flex align-items-center gap-2 border-bottom border-secondary pb-1">
+                                            <i class="bi bi-film text-info fs-5"></i> 影片重點摘要
+                                        </div>
+                                        <p class="text-theme-body mb-0 fs-6" style="line-height: 1.6;">
+                                            {{ video.summary }}
+                                        </p>
+                                    </div>
+
+                                    <div
+                                        class="pt-3 border-top border-secondary d-flex justify-content-end align-items-center">
+                                        <a href="#article/{{ video.id }}" class="btn btn-custom-readmore">
+                                            <i class="bi bi-play-circle-fill me-1"></i>
+                                            <span>觀看影片與閱讀內文</span>
+                                            <i class="bi bi-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- 子區塊 1.2：新聞報導 -->
+                <div>
+                    <div
+                        class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-newspaper text-info fs-3"></i>
+                            <h3 class="h4 fw-bold text-theme-heading mb-0">新聞報導</h3>
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        {% for news in data.ai_trends_news %}
+                        <div class="col-12 col-md-6">
+                            <article class="portal-card">
+                                <img src="{{ news.cover_image }}" class="portal-card-cover" alt="{{ news.title }}"
+                                    loading="lazy">
+
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="text-info fw-bold fs-6">
+                                            <i class="bi bi-clock-history me-1"></i> {{ news.date }}
+                                        </span>
+                                    </div>
+
+                                    <h3 class="h4 fw-bold portal-card-title my-3" style="line-height: 1.4;">
+                                        <a href="#article/{{ news.id }}" class="portal-card-title text-decoration-none">
+                                            {{ news.title }}
+                                        </a>
+                                    </h3>
+
+                                    <div class="mb-3">
+                                        {% for tag in news.tags %}
+                                        <span class="tag-badge">{{ tag }}</span>
+                                        {% endfor %}
+                                    </div>
+
+                                    <div class="summary-box mb-4 mt-auto">
+                                        <div
+                                            class="text-theme-heading fw-bold fs-6 mb-2 d-flex align-items-center gap-2 border-bottom border-secondary pb-1">
+                                            <i class="bi bi-card-checklist text-info fs-5"></i> 核心摘要
+                                        </div>
+                                        <p class="text-theme-body mb-0 fs-6" style="line-height: 1.6;">
+                                            {{ news.summary }}
+                                        </p>
+                                    </div>
+
+                                    <div
+                                        class="pt-3 border-top border-secondary d-flex justify-content-end align-items-center">
+                                        <a href="#article/{{ news.id }}" class="btn btn-custom-readmore">
+                                            <span>閱讀全文</span>
+                                            <i class="bi bi-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+
+            <hr class="border-info opacity-50 my-5">
+
+            <!-- 分類二：不動產 新聞卡片 -->
+            <section id="category-ai-news" class="mb-4">
+                <div class="section-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="d-flex align-items-center gap-2 mb-1">
+                            <i class="bi bi-building text-warning fs-2"></i> 不動產 新聞
+                        </h2>
+                        <p class="text-theme-body mb-0 fs-6">統整臺灣國內不動產市場、BIM 工程應用與動態估價之最新新聞內文。</p>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    {% for news in data.ai_real_estate_news %}
+                    <div class="col-12 col-md-6">
+                        <article class="portal-card">
+                            <img src="{{ news.cover_image }}" class="portal-card-cover" alt="{{ news.title }}"
+                                loading="lazy">
+
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-info fw-bold fs-6">
+                                        <i class="bi bi-clock-history me-1"></i> {{ news.date }}
+                                    </span>
+                                </div>
+
+                                <h3 class="h4 fw-bold portal-card-title my-3" style="line-height: 1.4;">
+                                    <a href="#article/{{ news.id }}" class="portal-card-title text-decoration-none">
+                                        {{ news.title }}
+                                    </a>
+                                </h3>
+
+                                <div class="mb-3">
+                                    {% for tag in news.tags %}
+                                    <span class="tag-badge">{{ tag }}</span>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="summary-box mb-4 mt-auto">
+                                    <div
+                                        class="text-theme-heading fw-bold fs-6 mb-2 d-flex align-items-center gap-2 border-bottom border-secondary pb-1">
+                                        <i class="bi bi-card-checklist text-info fs-5"></i> 核心摘要
+                                    </div>
+                                    <p class="text-theme-body mb-0 fs-6" style="line-height: 1.6;">
+                                        {{ news.summary }}
+                                    </p>
+                                </div>
+
+                                <div
+                                    class="pt-3 border-top border-secondary d-flex justify-content-end align-items-center">
+                                    <a href="#article/{{ news.id }}" class="btn btn-custom-readmore">
+                                        <span>閱讀全文</span>
+                                        <i class="bi bi-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <hr class="border-info opacity-50 my-5">
+
+            <!-- 分類三：水泥/鋼筋價格 新聞卡片 -->
+            <section id="category-material-prices" class="mb-4">
+                <div class="section-header d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="d-flex align-items-center gap-2 mb-1">
+                            <i class="bi bi-box-seam text-success fs-2"></i> 水泥/鋼筋價格 新聞
+                        </h2>
+                        <p class="text-theme-body mb-0 fs-6">追蹤臺灣國內水泥、低碳綠色建材與鋼筋盤價行情動態與成本趨勢。</p>
+                    </div>
+                </div>
+
+                <!-- 子區塊 3.1：水泥價格 -->
+                <div class="mb-5">
+                    <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom border-secondary border-opacity-50">
+                        <i class="bi bi-bricks text-success fs-4"></i>
+                        <h3 class="h5 fw-bold text-theme-heading mb-0">水泥價格新聞</h3>
+                    </div>
+                    <div class="row g-4">
+                        {% for news in data.cement_price_news %}
+                        <div class="col-12 col-md-6">
+                            <article class="portal-card">
+                                <img src="{{ news.cover_image }}" class="portal-card-cover" alt="{{ news.title }}"
+                                    loading="lazy">
+
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="text-info fw-bold fs-6">
+                                            <i class="bi bi-clock-history me-1"></i> {{ news.date }}
+                                        </span>
+                                    </div>
+
+                                    <h3 class="h4 fw-bold portal-card-title my-3" style="line-height: 1.4;">
+                                        <a href="#article/{{ news.id }}" class="portal-card-title text-decoration-none">
+                                            {{ news.title }}
+                                        </a>
+                                    </h3>
+
+                                    <div class="mb-3">
+                                        {% for tag in news.tags %}
+                                        <span class="tag-badge">{{ tag }}</span>
+                                        {% endfor %}
+                                    </div>
+
+                                    <div class="summary-box mb-4 mt-auto">
+                                        <div
+                                            class="text-theme-heading fw-bold fs-6 mb-2 d-flex align-items-center gap-2 border-bottom border-secondary pb-1">
+                                            <i class="bi bi-card-checklist text-info fs-5"></i> 核心摘要
+                                        </div>
+                                        <p class="text-theme-body mb-0 fs-6" style="line-height: 1.6;">
+                                            {{ news.summary }}
+                                        </p>
+                                    </div>
+
+                                    <div
+                                        class="pt-3 border-top border-secondary d-flex justify-content-end align-items-center">
+                                        <a href="#article/{{ news.id }}" class="btn btn-custom-readmore">
+                                            <span>閱讀全文</span>
+                                            <i class="bi bi-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- 子區塊 3.2：鋼筋價格 -->
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom border-secondary border-opacity-50">
+                        <i class="bi bi-layers-half text-success fs-4"></i>
+                        <h3 class="h5 fw-bold text-theme-heading mb-0">鋼筋價格新聞</h3>
+                    </div>
+                    <div class="row g-4">
+                        {% for news in data.rebar_price_news %}
+                        <div class="col-12 col-md-6">
+                            <article class="portal-card">
+                                <img src="{{ news.cover_image }}" class="portal-card-cover" alt="{{ news.title }}"
+                                    loading="lazy">
+
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="text-info fw-bold fs-6">
+                                            <i class="bi bi-clock-history me-1"></i> {{ news.date }}
+                                        </span>
+                                    </div>
+
+                                    <h3 class="h4 fw-bold portal-card-title my-3" style="line-height: 1.4;">
+                                        <a href="#article/{{ news.id }}" class="portal-card-title text-decoration-none">
+                                            {{ news.title }}
+                                        </a>
+                                    </h3>
+
+                                    <div class="mb-3">
+                                        {% for tag in news.tags %}
+                                        <span class="tag-badge">{{ tag }}</span>
+                                        {% endfor %}
+                                    </div>
+
+                                    <div class="summary-box mb-4 mt-auto">
+                                        <div
+                                            class="text-theme-heading fw-bold fs-6 mb-2 d-flex align-items-center gap-2 border-bottom border-secondary pb-1">
+                                            <i class="bi bi-card-checklist text-info fs-5"></i> 核心摘要
+                                        </div>
+                                        <p class="text-theme-body mb-0 fs-6" style="line-height: 1.6;">
+                                            {{ news.summary }}
+                                        </p>
+                                    </div>
+
+                                    <div
+                                        class="pt-3 border-top border-secondary d-flex justify-content-end align-items-center">
+                                        <a href="#article/{{ news.id }}" class="btn btn-custom-readmore">
+                                            <span>閱讀全文</span>
+                                            <i class="bi bi-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </section>
+
+        </main>
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- 視圖二：完整文章頁 (Full Article Page) -->
+    <!-- ========================================================================= -->
+    <div id="view-article" class="view-section">
+
+        <!-- 各文章內文渲染容器 (根據 ID 切換顯示) -->
+        {% for item in data.all_articles %}
+        <article id="article-detail-{{ item.id }}" class="article-detail-content d-none">
+
+            <!-- 文章頂部 Banner -->
+            <div class="article-page-header">
+                <div class="container">
+                    <!-- 面包屑導覽與返回按鈕 -->
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+                        <a href="#overview" class="btn btn-custom-back d-inline-flex align-items-center gap-2">
+                            <i class="bi bi-arrow-left fs-5"></i>
+                            <span>返回總覽首頁</span>
+                        </a>
+
+                        <div class="text-theme-muted fs-6">
+                            <a href="#overview" class="text-info text-decoration-none">總覽首頁</a>
+                            <i class="bi bi-chevron-right mx-2 text-secondary"></i>
+                            <span>{{ item.category }}</span>
+                        </div>
+                    </div>
+
+                    <!-- 分類標籤與中元資料 -->
+                    <div class="d-flex flex-wrap align-items-center gap-3 mb-3 fs-6">
+                        <span
+                            class="badge {% if item.type == 'video' %}bg-danger{% else %}bg-info text-dark{% endif %} fw-bold px-3 py-2 fs-6">
+                            {{ item.category }}
+                        </span>
+                        <span class="text-info fw-bold"><i class="bi bi-calendar3 me-1"></i> {{ item.date }}</span>
+                    </div>
+
+                    <!-- 大標題與副標題 -->
+                    <h1 class="display-6 fw-bold text-theme-heading mb-3" style="line-height: 1.3;">
+                        {{ item.title }}
+                    </h1>
+                    <p class="fs-5 text-info fw-semibold mb-3" style="line-height: 1.6;">
+                        {{ item.full_content.subtitle }}
+                    </p>
+
+                    <!-- 文章標籤列 -->
+                    <div>
+                        {% for tag in item.tags %}
+                        <span class="tag-badge">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- 文章主要內容區 -->
+            <div class="container pb-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10 col-xl-9">
+
+                        <!-- 多媒體展示區 (影片 / 圖片) -->
+                        <div class="mb-5">
+                            {% if item.type == 'video' %}
+                            <div class="ratio ratio-16x9 rounded-4 overflow-hidden border border-secondary shadow-lg">
+                                <iframe src="{{ item.embed_url }}" title="{{ item.title }}"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowfullscreen loading="lazy">
+                                </iframe>
+                            </div>
+                            <div class="text-center text-theme-muted fs-6 mt-2">
+                                <i class="bi bi-play-btn me-1 text-danger"></i> NVIDIA 專題演講精華影片
+                            </div>
+                            {% else %}
+                            <img src="{{ item.cover_image }}" alt="{{ item.title }}" class="article-cover-img mb-2">
+                            <div class="text-center text-theme-muted fs-6">
+                                <i class="bi bi-camera me-1 text-info"></i> 新聞現場報導照片
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- 重點摘要 Highlight 盒 -->
+                        <div class="summary-box p-4 mb-5 rounded-4 shadow-sm border border-info border-opacity-50">
+                            <div
+                                class="text-theme-heading fw-bold fs-5 mb-3 d-flex align-items-center gap-2 border-bottom border-secondary pb-2">
+                                {% if item.type == 'video' %}
+                                <i class="bi bi-film text-info fs-4"></i> 影片重點摘要
+                                {% else %}
+                                <i class="bi bi-stars text-info fs-4"></i> 新聞重點摘要
+                                {% endif %}
+                            </div>
+                            <p class="fs-6 text-theme-body mb-0" style="line-height: 1.8;">
+                                {{ item.summary }}
+                            </p>
+                        </div>
+
+                        <!-- 完整新聞段落區 -->
+                        <div class="article-content-body mb-5">
+                            <h3 class="fw-bold text-theme-heading mb-4 d-flex align-items-center gap-2 border-left ps-3"
+                                style="border-left: 5px solid var(--accent-cyan);">
+                                {% if item.type == 'video' %}
+                                <i class="bi bi-file-earmark-text text-info"></i> 影片新聞稿內文
+                                {% else %}
+                                <i class="bi bi-file-earmark-text text-info"></i> 完整新聞報導內文
+                                {% endif %}
+                            </h3>
+                            {% for para in item.full_content.paragraphs %}
+                            <p class="article-paragraph">
+                                {{ para }}
+                            </p>
+                            {% endfor %}
+                        </div>
+
+                        <!-- 延伸分析與專家洞察盒 -->
+                        <div class="bg-theme-card p-4 rounded-4 mb-5 border border-secondary">
+                            <div
+                                class="text-theme-heading fw-bold fs-5 mb-3 d-flex align-items-center gap-2 border-bottom border-secondary pb-2">
+                                <i class="bi bi-lightbulb-fill text-warning fs-4"></i> 專案延伸分析與產業洞察
+                            </div>
+
+                            <div class="row g-3">
+                                {% for analysis in item.full_content.extended_analysis %}
+                                <div class="col-12 col-md-4">
+                                    <div class="analysis-card h-100">
+                                        <div class="fw-bold text-info fs-6 mb-1">
+                                            <i class="bi bi-check2-circle me-1"></i> {{ analysis.title }}
+                                        </div>
+                                        <p class="text-theme-body opacity-90 fs-6 mb-0" style="line-height: 1.6;">
+                                            {{ analysis.desc }}
+                                        </p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- 原始新聞參考資訊區 -->
+                        <div
+                            class="p-4 rounded-3 border border-secondary mb-5 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 reference-box">
+                            <div>
+                                <div class="text-info fw-bold fs-6 mb-1">
+                                    {% if item.type == 'video' %}影片出處 / 原創影片連結{% else %}新聞出處 / 原文參考{% endif %}
+                                </div>
+                                <div class="text-theme-heading fs-6 fw-semibold">{{ item.full_content.original_title }}
+                                </div>
+                            </div>
+                            <a href="{{ item.full_content.original_url }}" target="_blank" rel="noopener noreferrer"
+                                class="btn btn-outline-info text-nowrap py-2 px-3 fw-bold">
+                                {% if item.type == 'video' %}觀看原創影片{% else %}查看新聞原文{% endif %} <i
+                                    class="bi bi-box-arrow-up-right ms-1"></i>
+                            </a>
+                        </div>
+
+                        <!-- 底部導覽按鈕列 -->
+                        <div
+                            class="pt-4 border-top border-secondary d-flex flex-wrap justify-content-between align-items-center gap-3">
+                            <a href="#overview" class="btn btn-custom-back d-inline-flex align-items-center gap-2">
+                                <i class="bi bi-arrow-left fs-5"></i>
+                                <span>返回總覽首頁</span>
+                            </a>
+                            <a href="#overview" class="btn btn-custom-readmore">
+                                <i class="bi bi-grid-fill me-1"></i> 瀏覽更多內容
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </article>
+        {% endfor %}
+
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- 頁尾 Footer -->
+    <!-- ========================================================================= -->
+    <footer class="footer-custom">
+        <div class="container text-center">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-md-start mb-2 mb-md-0">
+                    <span class="fw-bold text-theme-heading fs-5 me-2">
+                        <i class="bi bi-building-gear text-info me-1"></i>
+                        丞石建築開發股份有限公司
+                    </span>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0 text-theme-muted fs-6">&copy; 2026 丞石建築開發股份有限公司。版權所有。</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- ========================================================================= -->
+    <!-- 5. Bootstrap 5.3 CDN (JS Bundle 包含 Popper) -->
+    <!-- ========================================================================= -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+    <!-- ========================================================================= -->
+    <!-- 6. SPA 視圖路由與動態切換 JavaScript -->
+    <!-- ========================================================================= -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const viewOverview = document.getElementById('view-overview');
+            const viewArticle = document.getElementById('view-article');
+            const sidebarMenuEl = document.getElementById('sidebarMenu');
+
+            // -----------------------------------------------------------------
+            // 7. 深色 / 淺色主題動態切換控制器 (Theme Switcher Logic)
+            // -----------------------------------------------------------------
+            const mainThemeBtn = document.getElementById('theme-toggle-btn');
+            const mainThemeIcon = document.getElementById('theme-toggle-icon');
+            const mainThemeText = document.getElementById('theme-toggle-text');
+
+            const sideThemeBtn = document.getElementById('theme-toggle-btn-sidebar');
+            const sideThemeIcon = document.getElementById('theme-toggle-icon-sidebar');
+            const sideThemeText = document.getElementById('theme-toggle-text-sidebar');
+
+            function applyTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+
+                const isLight = (theme === 'light');
+                const iconClass = isLight ? 'bi bi-moon-stars-fill text-primary' : 'bi bi-sun-fill text-warning';
+                const textStr = isLight ? '深色模式' : '淺色模式';
+
+                if (mainThemeIcon) mainThemeIcon.className = iconClass + ' fs-5';
+                if (mainThemeText) mainThemeText.textContent = textStr;
+
+                if (sideThemeIcon) sideThemeIcon.className = iconClass;
+                if (sideThemeText) sideThemeText.textContent = textStr;
+            }
+
+            // 初次載入時讀取偏好（預設為淺色模式 light）
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            applyTheme(savedTheme);
+
+            function toggleTheme() {
+                const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+                const nextTheme = (currentTheme === 'light') ? 'dark' : 'light';
+                applyTheme(nextTheme);
+            }
+
+            if (mainThemeBtn) mainThemeBtn.addEventListener('click', toggleTheme);
+            if (sideThemeBtn) sideThemeBtn.addEventListener('click', toggleTheme);
+
+            // -----------------------------------------------------------------
+            // 8. 路由處理器 (Hash Router)
+            // -----------------------------------------------------------------
+            function handleRoute() {
+                const hash = window.location.hash || '#overview';
+
+                // 取消所有側邊欄高亮
+                document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
+
+                if (hash.startsWith('#article/')) {
+                    // 解析文章 ID
+                    const articleId = hash.replace('#article/', '');
+
+                    // 顯示完整文章視圖，隱藏總覽
+                    viewOverview.classList.remove('active');
+                    viewArticle.classList.add('active');
+
+                    // 隱藏所有文章內容，只顯示當前文章
+                    document.querySelectorAll('.article-detail-content').forEach(el => el.classList.add('d-none'));
+                    const targetArticle = document.getElementById('article-detail-' + articleId);
+
+                    if (targetArticle) {
+                        targetArticle.classList.remove('d-none');
+                    }
+
+                    // 高亮側欄對應項目
+                    const activeMenuLink = document.getElementById('menu-link-' + articleId);
+                    if (activeMenuLink) {
+                        activeMenuLink.classList.add('active');
+                    }
+
+                    // 滾動至頂部
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                } else {
+                    // 顯示總覽視圖，隱藏完整文章頁
+                    viewArticle.classList.remove('active');
+                    viewOverview.classList.add('active');
+
+                    // 高亮側欄「全覽」項目
+                    const overviewLink = document.getElementById('menu-link-overview');
+                    if (overviewLink) {
+                        overviewLink.classList.add('active');
+                    }
+
+                    // 若 Hash 指定卡片分類區域 (如 #category-ai-trends)
+                    if (hash && hash !== '#overview') {
+                        const targetSection = document.querySelector(hash);
+                        if (targetSection) {
+                            setTimeout(() => {
+                                targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }, 50);
+                        }
+                    } else {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                }
+            }
+
+            // 監聽網址 Hash 變更與頁面初次載入
+            window.addEventListener('hashchange', handleRoute);
+            handleRoute();
+
+            // 點擊側邊欄連結時，自動收起 Drawer
+            document.querySelectorAll('#sidebarMenu a').forEach(link => {
+                link.addEventListener('click', function () {
+                    let bsOffcanvas = bootstrap.Offcanvas.getInstance(sidebarMenuEl);
+                    if (bsOffcanvas) {
+                        bsOffcanvas.hide();
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>
