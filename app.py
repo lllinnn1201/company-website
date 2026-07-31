@@ -215,8 +215,8 @@ def get_portal_data():
         }
     ]
 
-    # 3.1 水泥/鋼筋價格 新聞 - 水泥價格
-    cement_price_news = [
+    # 3. 水泥/鋼筋價格 新聞
+    material_price_news = [
         {
             "id": 6,
             "category": "水泥/鋼筋價格 新聞",
@@ -227,7 +227,7 @@ def get_portal_data():
             "tags": ["#水泥價格", "#預拌混凝土", "#低碳水泥", "#建材成本"],
             "summary": "受環境部碳費政策與綠建築標章推動，國內低碳水與預拌混凝土價格呈現穩健趨勢。各大建廠積極轉型減碳技術，影響營造工程發包資材預算與採購策略。",
             "full_content": {
-                "subtitle": "深度剖析水泥大廠產能調度、進口水泥課稅政策與營造廠發包成本影響。",
+                "subtitle": "深度剖析水泥大廠產能調定、進口水泥課稅政策與營造廠發包成本影響。",
                 "paragraphs": [
                     "隨著綠建築與低碳營造趨勢明確，國內水泥與混凝土產業正迎來近五年最大規模的產品轉型。市場最新統計顯示，符合低碳認證的波特蘭石灰石水泥與墁砌水泥需求年增超過 30%。",
                     "各大水泥大廠表示，因應碳費基期設定與綠色金融授信標準，未來低碳混凝土將逐漸成為大型建案與公共工程的標準配備。雖然初發包單價略微上揚，但能顯著提升建案價值與綠建築等級。",
@@ -250,11 +250,7 @@ def get_portal_data():
                 "original_title": "營造資材行情報導：國內水泥價格與碳費政策影響評估",
                 "original_url": "https://example.com/news/cement-price-trends"
             }
-        }
-    ]
-
-    # 3.2 水泥/鋼筋價格 新聞 - 鋼筋價格
-    rebar_price_news = [
+        },
         {
             "id": 7,
             "category": "水泥/鋼筋價格 新聞",
@@ -291,6 +287,17 @@ def get_portal_data():
         }
     ]
 
+    # 4. 行政院主計總處 — 營造工程物價指數 (CCI) 近 12 個月三大核心建材數據 (基期 100)
+    cci_chart_data = {
+        "months": [
+            "2025/08", "2025/09", "2025/10", "2025/11", "2025/12", "2026/01",
+            "2026/02", "2026/03", "2026/04", "2026/05", "2026/06", "2026/07"
+        ],
+        "total_index": [107.2, 107.5, 107.8, 108.1, 108.3, 108.5, 108.4, 108.7, 109.0, 109.2, 109.5, 109.8],
+        "rebar_index": [101.5, 100.8, 102.3, 103.1, 102.5, 101.8, 100.5, 102.0, 103.4, 104.1, 103.8, 104.5],
+        "concrete_index": [112.5, 113.0, 113.8, 114.2, 115.0, 115.5, 116.1, 116.8, 117.2, 117.8, 118.2, 118.7]
+    }
+
     # 英雄區 (Hero Section) 公告內容
     hero_info = {
         "badge": "資訊專區",
@@ -299,15 +306,15 @@ def get_portal_data():
     }
 
     # 合併所有文章與影音資料，利於前端單獨切換與路由
-    all_articles = ai_trends_videos + ai_trends_news + ai_real_estate_news + cement_price_news + rebar_price_news
+    all_articles = ai_trends_videos + ai_trends_news + ai_real_estate_news + material_price_news
 
     return {
         "hero": hero_info,
         "ai_trends_videos": ai_trends_videos,
         "ai_trends_news": ai_trends_news,
         "ai_real_estate_news": ai_real_estate_news,
-        "cement_price_news": cement_price_news,
-        "rebar_price_news": rebar_price_news,
+        "material_price_news": material_price_news,
+        "cci_chart_data": cci_chart_data,
         "all_articles": all_articles
     }
 
