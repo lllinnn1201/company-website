@@ -754,53 +754,7 @@
 
             <hr class="border-secondary my-3">
 
-            <!-- 分類一：黃仁勳與 AI 趨勢 -->
-            <div class="text-info fw-bold fs-5 mb-2 text-uppercase d-flex align-items-center gap-2 px-1">
-                <i class="bi bi-cpu-fill text-info fs-5"></i>
-                <span>黃仁勳與 AI 趨勢</span>
-            </div>
-
-            <!-- 子分類 1.1：YouTube 影音 -->
-            <div class="text-theme-muted fw-bold fs-6 mb-2 ps-2 text-uppercase d-flex align-items-center gap-1">
-                <i class="bi bi-youtube text-danger me-1"></i>
-                <span>YouTube 影音</span>
-            </div>
-            <div class="list-group list-group-flush mb-3 gap-1 ps-2">
-                {% for video in data.ai_trends_videos %}
-                <a href="#article/{{ video.id }}"
-                    class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 p-2.5 sidebar-link"
-                    id="menu-link-{{ video.id }}">
-                    <div class="fw-semibold text-truncate fs-6"><i
-                            class="bi bi-play-circle-fill text-danger me-2"></i>{{ video.title }}</div>
-                    <small class="text-info ps-4 d-block mt-1 fw-semibold" style="font-size: 0.85rem;"><i
-                            class="bi bi-calendar3 me-1"></i>{{ video.date }}</small>
-                </a>
-                {% endfor %}
-            </div>
-
-            <!-- 子分類 1.2：新聞報導 -->
-            <div class="text-theme-muted fw-bold fs-6 mb-2 ps-2 text-uppercase d-flex align-items-center gap-1">
-                <i class="bi bi-newspaper text-info me-1"></i>
-                <span>新聞報導</span>
-            </div>
-            <div class="list-group list-group-flush mb-4 gap-1 ps-2">
-                {% for news in data.ai_trends_news %}
-                <a href="#article/{{ news.id }}"
-                    class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 p-2.5 sidebar-link"
-                    id="menu-link-{{ news.id }}">
-                    <div class="fw-semibold text-truncate fs-6"><i class="bi bi-newspaper text-info me-2"></i>{{
-                        news.title }}</div>
-                    <small class="text-info ps-4 d-block mt-1 fw-semibold" style="font-size: 0.85rem;"><i
-                            class="bi bi-calendar3 me-1"></i>{{ news.date }}</small>
-                </a>
-                {% endfor %}
-            </div>
-
-            <hr class="border-secondary my-3">
-
-            <hr class="border-secondary my-3">
-
-            <!-- 分類二：不動產新聞 -->
+            <!-- 分類一：不動產新聞 -->
             <div class="text-info fw-bold fs-5 mb-3 text-uppercase d-flex align-items-center gap-2 px-1">
                 <i class="bi bi-building text-warning fs-5"></i>
                 <span>不動產新聞</span>
@@ -820,13 +774,13 @@
 
             <hr class="border-secondary my-3">
 
-            <!-- 分類三：水泥/鋼筋價格 -->
+            <!-- 分類二：水泥/鋼筋價格 -->
             <div class="text-info fw-bold fs-5 mb-3 text-uppercase d-flex align-items-center gap-2 px-1">
                 <i class="bi bi-box-seam text-success fs-5"></i>
                 <span>水泥/鋼筋價格</span>
             </div>
 
-            <!-- 子分類 3.1：新聞報導 -->
+            <!-- 子分類 2.1：新聞報導 -->
             <div class="text-theme-muted fw-bold fs-6 mb-2 ps-2 text-uppercase d-flex align-items-center gap-1">
                 <i class="bi bi-newspaper text-success me-1"></i>
                 <span>新聞報導</span>
@@ -844,7 +798,7 @@
                 {% endfor %}
             </div>
 
-            <!-- 子分類 3.3：建材價格走勢圖 -->
+            <!-- 子分類 2.2：營造材料價格走勢圖 -->
             <div class="text-theme-muted fw-bold fs-6 mb-2 ps-2 text-uppercase d-flex align-items-center gap-1">
                 <i class="bi bi-graph-up-arrow text-success me-1"></i>
                 <span>營造材料價格走勢圖</span>
@@ -856,6 +810,50 @@
                     <div class="fw-semibold text-truncate fs-6"><i
                             class="bi bi-bar-chart-line-fill text-success me-2"></i>營造材料價格走勢圖</div>
                 </a>
+            </div>
+
+            <hr class="border-secondary my-3">
+
+            <!-- 分類三：黃仁勳與 AI 趨勢 -->
+            <div class="text-info fw-bold fs-5 mb-2 text-uppercase d-flex align-items-center gap-2 px-1">
+                <i class="bi bi-cpu-fill text-info fs-5"></i>
+                <span>黃仁勳與 AI 趨勢</span>
+            </div>
+
+            <!-- 子分類 3.1：YouTube 影音 -->
+            <div class="text-theme-muted fw-bold fs-6 mb-2 ps-2 text-uppercase d-flex align-items-center gap-1">
+                <i class="bi bi-youtube text-danger me-1"></i>
+                <span>YouTube 影音</span>
+            </div>
+            <div class="list-group list-group-flush mb-3 gap-1 ps-2">
+                {% for video in data.ai_trends_videos %}
+                <a href="#article/{{ video.id }}"
+                    class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 p-2.5 sidebar-link"
+                    id="menu-link-{{ video.id }}">
+                    <div class="fw-semibold text-truncate fs-6"><i
+                            class="bi bi-play-circle-fill text-danger me-2"></i>{{ video.title }}</div>
+                    <small class="text-info ps-4 d-block mt-1 fw-semibold" style="font-size: 0.85rem;"><i
+                            class="bi bi-calendar3 me-1"></i>{{ video.date }}</small>
+                </a>
+                {% endfor %}
+            </div>
+
+            <!-- 子分類 3.2：新聞報導 -->
+            <div class="text-theme-muted fw-bold fs-6 mb-2 ps-2 text-uppercase d-flex align-items-center gap-1">
+                <i class="bi bi-newspaper text-info me-1"></i>
+                <span>新聞報導</span>
+            </div>
+            <div class="list-group list-group-flush mb-4 gap-1 ps-2">
+                {% for news in data.ai_trends_news %}
+                <a href="#article/{{ news.id }}"
+                    class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 p-2.5 sidebar-link"
+                    id="menu-link-{{ news.id }}">
+                    <div class="fw-semibold text-truncate fs-6"><i class="bi bi-newspaper text-info me-2"></i>{{
+                        news.title }}</div>
+                    <small class="text-info ps-4 d-block mt-1 fw-semibold" style="font-size: 0.85rem;"><i
+                            class="bi bi-calendar3 me-1"></i>{{ news.date }}</small>
+                </a>
+                {% endfor %}
             </div>
 
             <!-- 底部返回按鈕 -->
@@ -890,16 +888,16 @@
 
                         <div class="d-flex flex-wrap justify-content-center gap-3">
                             <div class="hero-stat-card d-flex align-items-center gap-2">
-                                <i class="bi bi-cpu-fill text-info fs-4"></i>
-                                <span>黃仁勳與 AI 趨勢</span>
-                            </div>
-                            <div class="hero-stat-card d-flex align-items-center gap-2">
                                 <i class="bi bi-building text-warning fs-4"></i>
                                 <span>不動產新聞</span>
                             </div>
                             <div class="hero-stat-card d-flex align-items-center gap-2">
                                 <i class="bi bi-box-seam text-success fs-4"></i>
                                 <span>水泥/鋼筋價格</span>
+                            </div>
+                            <div class="hero-stat-card d-flex align-items-center gap-2">
+                                <i class="bi bi-cpu-fill text-info fs-4"></i>
+                                <span>黃仁勳與 AI 趨勢</span>
                             </div>
                         </div>
                     </div>
@@ -910,8 +908,177 @@
         <!-- 主要卡片網格區域 -->
         <main class="container py-5">
 
-            <!-- 分類一：黃仁勳與 AI 趨勢卡片區段 -->
-            <section id="category-ai-trends" class="mb-5">
+            <!-- 分類一：不動產新聞卡片 -->
+            <section id="category-ai-news" class="mb-5">
+                <div class="section-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="d-flex align-items-center gap-2 mb-1">
+                            <i class="bi bi-building text-warning fs-2"></i> 不動產新聞
+                        </h2>
+                        <p class="text-theme-body mb-0 fs-6">統整臺灣國內不動產市場、BIM 工程應用與動態估價之最新新聞內文。</p>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    {% for news in data.ai_real_estate_news %}
+                    <div class="col-12 col-md-6">
+                        <article class="portal-card">
+                            <img src="{{ news.cover_image }}" class="portal-card-cover" alt="{{ news.title }}"
+                                loading="lazy">
+
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-info fw-bold fs-6">
+                                        <i class="bi bi-clock-history me-1"></i> {{ news.date }}
+                                    </span>
+                                </div>
+
+                                <h3 class="h4 fw-bold portal-card-title my-3" style="line-height: 1.4;">
+                                    <a href="#article/{{ news.id }}" class="portal-card-title text-decoration-none">
+                                        {{ news.title }}
+                                    </a>
+                                </h3>
+
+                                <div class="mb-3">
+                                    {% for tag in news.tags %}
+                                    <span class="tag-badge">{{ tag }}</span>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="summary-box mb-4 mt-auto">
+                                    <div
+                                        class="text-theme-heading fw-bold fs-6 mb-2 d-flex align-items-center gap-2 border-bottom border-secondary pb-1">
+                                        <i class="bi bi-card-checklist text-info fs-5"></i> 核心摘要
+                                    </div>
+                                    <p class="text-theme-body mb-0 fs-6" style="line-height: 1.6;">
+                                        {{ news.summary }}
+                                    </p>
+                                </div>
+
+                                <div
+                                    class="pt-3 border-top border-secondary d-flex justify-content-end align-items-center">
+                                    <a href="#article/{{ news.id }}" class="btn btn-custom-readmore">
+                                        <span>閱讀全文</span>
+                                        <i class="bi bi-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <hr class="border-info opacity-50 my-5">
+
+            <!-- 分類二：水泥/鋼筋價格卡片 -->
+            <section id="category-material-prices" class="mb-5">
+                <div class="section-header d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="d-flex align-items-center gap-2 mb-1">
+                            <i class="bi bi-box-seam text-success fs-2"></i> 水泥/鋼筋價格
+                        </h2>
+                        <p class="text-theme-body mb-0 fs-6">追蹤臺灣國內水泥、鋼筋盤價行情動態與成本趨勢。</p>
+                    </div>
+                </div>
+
+                <!-- 子區塊 2.1：新聞報導 -->
+                <div class="mb-5">
+                    <div
+                        class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom border-secondary border-opacity-50">
+                        <i class="bi bi-newspaper text-success fs-3"></i>
+                        <h3 class="h4 fw-bold text-theme-heading mb-0">新聞報導</h3>
+                    </div>
+                    <div class="row g-4">
+                        {% for news in data.material_price_news %}
+                        <div class="col-12 col-md-6">
+                            <article class="portal-card">
+                                <img src="{{ news.cover_image }}" class="portal-card-cover" alt="{{ news.title }}"
+                                    loading="lazy">
+
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="text-info fw-bold fs-6">
+                                            <i class="bi bi-clock-history me-1"></i> {{ news.date }}
+                                        </span>
+                                    </div>
+
+                                    <h3 class="h4 fw-bold portal-card-title my-3" style="line-height: 1.4;">
+                                        <a href="#article/{{ news.id }}" class="portal-card-title text-decoration-none">
+                                            {{ news.title }}
+                                        </a>
+                                    </h3>
+
+                                    <div class="mb-3">
+                                        {% for tag in news.tags %}
+                                        <span class="tag-badge">{{ tag }}</span>
+                                        {% endfor %}
+                                    </div>
+
+                                    <div class="summary-box mb-4 mt-auto">
+                                        <div
+                                            class="text-theme-heading fw-bold fs-6 mb-2 d-flex align-items-center gap-2 border-bottom border-secondary pb-1">
+                                            <i class="bi bi-card-checklist text-info fs-5"></i> 核心摘要
+                                        </div>
+                                        <p class="text-theme-body mb-0 fs-6" style="line-height: 1.6;">
+                                            {{ news.summary }}
+                                        </p>
+                                    </div>
+
+                                    <div
+                                        class="pt-3 border-top border-secondary d-flex justify-content-end align-items-center">
+                                        <a href="#article/{{ news.id }}" class="btn btn-custom-readmore">
+                                            <span>閱讀全文</span>
+                                            <i class="bi bi-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- 子區塊 2.2：三大核心建材價格走勢圖 -->
+                <div class="mt-5" id="section-cci-chart">
+                    <div class="portal-card p-3 p-md-4">
+                        <div
+                            class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3 pb-3 border-bottom border-secondary border-opacity-50">
+                            <div>
+                                <h3 class="h4 fw-bold text-theme-heading mb-1 d-flex align-items-center gap-2">
+                                    <i class="bi bi-graph-up-arrow text-success fs-3"></i>
+                                    <span>營造材料價格走勢圖（行政院主計總處 CCI）</span>
+                                </h3>
+                                <p class="text-theme-muted mb-0 fs-6">近 12 個月營造工程物價與三大核心營造材料指數變動走勢圖（以基期指數 100 為基準）</p>
+                            </div>
+                            <div class="text-md-end">
+                                <span
+                                    class="badge bg-success-subtle text-success border border-success px-3 py-2 fs-6 rounded-pill fw-semibold">
+                                    <i class="bi bi-shield-check me-1"></i>官方統計數據
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Canvas 圖表繪製區 -->
+                        <div class="position-relative w-100" style="min-height: 320px; max-height: 440px;">
+                            <canvas id="cciChart"></canvas>
+                        </div>
+
+                        <!-- 官方資料來源小字標註 -->
+                        <div class="mt-3 pt-2 border-top border-secondary border-opacity-25 d-flex justify-content-end">
+                            <span class="text-theme-muted fs-6 fw-medium">
+                                💡 資料來源：行政院主計總處 — 營造工程物價指數 (CCI) 月報數據。
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <hr class="border-info opacity-50 my-5">
+
+            <!-- 分類三：黃仁勳與 AI 趨勢卡片區段 -->
+            <section id="category-ai-trends" class="mb-4">
                 <div class="section-header d-flex justify-content-between align-items-center">
                     <div>
                         <h2 class="d-flex align-items-center gap-2 mb-1">
@@ -921,7 +1088,7 @@
                     </div>
                 </div>
 
-                <!-- 子區塊 1.1：YouTube 影音 -->
+                <!-- 子區塊 3.1：YouTube 影音 -->
                 <div class="mb-5">
                     <div
                         class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary">
@@ -995,7 +1162,7 @@
                     </div>
                 </div>
 
-                <!-- 子區塊 1.2：新聞報導 -->
+                <!-- 子區塊 3.2：新聞報導 -->
                 <div>
                     <div
                         class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary">
@@ -1054,175 +1221,6 @@
                         {% endfor %}
                     </div>
                 </div>
-            </section>
-
-            <hr class="border-info opacity-50 my-5">
-
-            <!-- 分類二：不動產新聞卡片 -->
-            <section id="category-ai-news" class="mb-4">
-                <div class="section-header d-flex justify-content-between align-items-center">
-                    <div>
-                        <h2 class="d-flex align-items-center gap-2 mb-1">
-                            <i class="bi bi-building text-warning fs-2"></i> 不動產新聞
-                        </h2>
-                        <p class="text-theme-body mb-0 fs-6">統整臺灣國內不動產市場、BIM 工程應用與動態估價之最新新聞內文。</p>
-                    </div>
-                </div>
-
-                <div class="row g-4">
-                    {% for news in data.ai_real_estate_news %}
-                    <div class="col-12 col-md-6">
-                        <article class="portal-card">
-                            <img src="{{ news.cover_image }}" class="portal-card-cover" alt="{{ news.title }}"
-                                loading="lazy">
-
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="text-info fw-bold fs-6">
-                                        <i class="bi bi-clock-history me-1"></i> {{ news.date }}
-                                    </span>
-                                </div>
-
-                                <h3 class="h4 fw-bold portal-card-title my-3" style="line-height: 1.4;">
-                                    <a href="#article/{{ news.id }}" class="portal-card-title text-decoration-none">
-                                        {{ news.title }}
-                                    </a>
-                                </h3>
-
-                                <div class="mb-3">
-                                    {% for tag in news.tags %}
-                                    <span class="tag-badge">{{ tag }}</span>
-                                    {% endfor %}
-                                </div>
-
-                                <div class="summary-box mb-4 mt-auto">
-                                    <div
-                                        class="text-theme-heading fw-bold fs-6 mb-2 d-flex align-items-center gap-2 border-bottom border-secondary pb-1">
-                                        <i class="bi bi-card-checklist text-info fs-5"></i> 核心摘要
-                                    </div>
-                                    <p class="text-theme-body mb-0 fs-6" style="line-height: 1.6;">
-                                        {{ news.summary }}
-                                    </p>
-                                </div>
-
-                                <div
-                                    class="pt-3 border-top border-secondary d-flex justify-content-end align-items-center">
-                                    <a href="#article/{{ news.id }}" class="btn btn-custom-readmore">
-                                        <span>閱讀全文</span>
-                                        <i class="bi bi-arrow-right"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </article>
-                    </div>
-                    {% endfor %}
-                </div>
-            </section>
-
-            <hr class="border-info opacity-50 my-5">
-
-            <!-- 分類三：水泥/鋼筋價格卡片 -->
-            <section id="category-material-prices" class="mb-4">
-                <div class="section-header d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h2 class="d-flex align-items-center gap-2 mb-1">
-                            <i class="bi bi-box-seam text-success fs-2"></i> 水泥/鋼筋價格
-                        </h2>
-                        <p class="text-theme-body mb-0 fs-6">追蹤臺灣國內水泥、鋼筋盤價行情動態與成本趨勢。</p>
-                    </div>
-                </div>
-
-                <!-- 子區塊 3.1：新聞報導 -->
-                <div class="mb-5">
-                    <div
-                        class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom border-secondary border-opacity-50">
-                        <i class="bi bi-newspaper text-success fs-3"></i>
-                        <h3 class="h4 fw-bold text-theme-heading mb-0">新聞報導</h3>
-                    </div>
-                    <div class="row g-4">
-                        {% for news in data.material_price_news %}
-                        <div class="col-12 col-md-6">
-                            <article class="portal-card">
-                                <img src="{{ news.cover_image }}" class="portal-card-cover" alt="{{ news.title }}"
-                                    loading="lazy">
-
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="text-info fw-bold fs-6">
-                                            <i class="bi bi-clock-history me-1"></i> {{ news.date }}
-                                        </span>
-                                    </div>
-
-                                    <h3 class="h4 fw-bold portal-card-title my-3" style="line-height: 1.4;">
-                                        <a href="#article/{{ news.id }}" class="portal-card-title text-decoration-none">
-                                            {{ news.title }}
-                                        </a>
-                                    </h3>
-
-                                    <div class="mb-3">
-                                        {% for tag in news.tags %}
-                                        <span class="tag-badge">{{ tag }}</span>
-                                        {% endfor %}
-                                    </div>
-
-                                    <div class="summary-box mb-4 mt-auto">
-                                        <div
-                                            class="text-theme-heading fw-bold fs-6 mb-2 d-flex align-items-center gap-2 border-bottom border-secondary pb-1">
-                                            <i class="bi bi-card-checklist text-info fs-5"></i> 核心摘要
-                                        </div>
-                                        <p class="text-theme-body mb-0 fs-6" style="line-height: 1.6;">
-                                            {{ news.summary }}
-                                        </p>
-                                    </div>
-
-                                    <div
-                                        class="pt-3 border-top border-secondary d-flex justify-content-end align-items-center">
-                                        <a href="#article/{{ news.id }}" class="btn btn-custom-readmore">
-                                            <span>閱讀全文</span>
-                                            <i class="bi bi-arrow-right"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </article>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-
-                <!-- 子區塊 3.3：三大核心建材價格走勢圖 -->
-                <div class="mt-5" id="section-cci-chart">
-                    <div class="portal-card p-3 p-md-4">
-                        <div
-                            class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3 pb-3 border-bottom border-secondary border-opacity-50">
-                            <div>
-                                <h3 class="h4 fw-bold text-theme-heading mb-1 d-flex align-items-center gap-2">
-                                    <i class="bi bi-graph-up-arrow text-success fs-3"></i>
-                                    <span>營造材料價格走勢圖（行政院主計總處 CCI）</span>
-                                </h3>
-                                <p class="text-theme-muted mb-0 fs-6">近 12 個月營造工程物價與三大核心營造材料指數變動走勢圖（以基期指數 100 為基準）</p>
-                            </div>
-                            <div class="text-md-end">
-                                <span
-                                    class="badge bg-success-subtle text-success border border-success px-3 py-2 fs-6 rounded-pill fw-semibold">
-                                    <i class="bi bi-shield-check me-1"></i>官方統計數據
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Canvas 圖表繪製區 -->
-                        <div class="position-relative w-100" style="min-height: 320px; max-height: 440px;">
-                            <canvas id="cciChart"></canvas>
-                        </div>
-
-                        <!-- 官方資料來源小字標註 -->
-                        <div class="mt-3 pt-2 border-top border-secondary border-opacity-25 d-flex justify-content-end">
-                            <span class="text-theme-muted fs-6 fw-medium">
-                                💡 資料來源：行政院主計總處 — 營造工程物價指數 (CCI) 月報數據。
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
             </section>
 
         </main>
