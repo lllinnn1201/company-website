@@ -9,10 +9,190 @@
 =============================================================================
 """
 
-from flask import Flask, render_template
+from datetime import datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
+from html import unescape
+import hashlib
+import hmac
+import os
+import re
+import ssl
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
+from xml.etree import ElementTree
+
+from flask import Flask, jsonify, render_template, request
+from database import (
+    database_is_configured,
+    load_portal_overrides,
+    replace_cci_observations,
+    replace_synced_articles,
+)
 
 # 初始化 Flask 應用程式
 app = Flask(__name__)
+# 開發期間修改 templates 目錄下的 HTML/CSS 後，下一個請求即重新載入模板。
+app.config["TEMPLATES_AUTO_RELOAD"] = True
+app.jinja_env.auto_reload = True
+
+
+# Google News 是搜尋結果的公開 RSS 介面；只讀取其提供的標題、摘要、日期和原文連結，
+# 不擷取或重製新聞內文。RSS 僅由每日排程讀取，首頁一律讀取 MySQL。
+NEWS_FEEDS = {
+    "ai-real-estate": {"query": "台灣 不動產", "tags": ["不動產", "房市"]},
+    "urban-renewal-land-development": {
+        "query": "台灣 都市更新 土地開發",
+        "tags": ["都市更新", "土地開發"],
+    },
+    "building-regulations": {
+        "query": "台灣 建築法規 建築管理",
+        "tags": ["建築法規", "建築管理"],
+    },
+    "material-prices": {"query": "台灣 水泥 鋼筋 價格", "tags": ["水泥", "鋼筋", "建材行情"]},
+    "jensen-ai-trends": {"query": "黃仁勳 AI", "tags": ["黃仁勳", "AI"]},
+}
+RSS_SOURCE = "google-news-rss"
+CCI_SOURCE = "dgbas-cci"
+CCI_QUERY_ENDPOINT = "https://nstatdb.dgbas.gov.tw/dgbasAll/webQuery.aspx"
+CCI_SOURCE_URL = "https://nstatdb.dgbas.gov.tw/dgbasAll/webMain.aspx?funid=queryXls&sys=210"
+CCI_SERIES = (
+    ("total-cci", "221141010:0/0/0/1000/0/"),
+    ("cement-cci", "221141010:0/0/0/1101001/0/"),
+    ("rebar-cci", "221141010:0/0/0/1104016/0/"),
+    ("concrete-cci", "221141010:0/0/0/1101002/0/"),
+)
+ARTICLE_PLACEHOLDER = (
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='675'"
+    "%3E%3Crect width='100%25' height='100%25' fill='%230f172a'/%3E"
+    "%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle'"
+    "fill='%2367e8f9' font-family='Arial,sans-serif' font-size='48'%3EAI NEWS%3C/text%3E%3C/svg%3E"
+)
+
+
+def _plain_text(value):
+    """將 RSS 摘要中的 HTML 轉成可安全顯示的純文字。"""
+    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", unescape(value or ""))).strip()
+
+
+def _slugify(value):
+    normalized = re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
+    return normalized[:70] or "news"
+
+
+def fetch_google_news(category_slug):
+    """Read one configured RSS feed and normalize it for MySQL storage."""
+    feed = NEWS_FEEDS[category_slug]
+    now = datetime.now(timezone.utc)
+    query = urlencode({"q": feed["query"], "hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"})
+    feed_url = f"https://news.google.com/rss/search?{query}"
+    request = Request(feed_url, headers={"User-Agent": "Mozilla/5.0 (Company News Portal RSS Reader)"})
+    with urlopen(request, timeout=15) as response:
+        root = ElementTree.fromstring(response.read())
+
+    items = []
+    for node in root.findall("./channel/item")[:8]:
+        title = _plain_text(node.findtext("title"))
+        link = (node.findtext("link") or "").strip()
+        source_node = node.find("source")
+        source = _plain_text(source_node.text if source_node is not None else "Google News")
+        summary = _plain_text(node.findtext("description"))
+        try:
+            date = parsedate_to_datetime(node.findtext("pubDate")).astimezone(timezone.utc).date().isoformat()
+        except (TypeError, ValueError):
+            date = now.date().isoformat()
+        if not title or not link:
+            continue
+        digest = hashlib.sha256(link.encode("utf-8")).hexdigest()[:16]
+        body = summary or "此新聞未提供摘要，請開啟原始報導查看完整內容。"
+        tags = [*feed["tags"], source]
+        items.append({
+            "slug": f"rss-{category_slug}-{_slugify(title)}-{digest}",
+            "title": title,
+            "date": date,
+            "cover_image": ARTICLE_PLACEHOLDER,
+            "tags": tags,
+            "tag_slugs": {tag: _slugify(tag) for tag in tags},
+            "summary": summary or f"來源：{source}。請開啟原始報導閱讀完整內容。",
+            "subtitle": "此新聞由 Google News RSS 同步，內容請以原始媒體報導為準。",
+            "body": body,
+            "original_title": f"{source}：{title}",
+            "original_url": link,
+            "source_name": source,
+        })
+    return items
+
+
+def _month_start(value):
+    return value.replace(day=1)
+
+
+def _shift_month(value, offset):
+    """Return the first day of the month ``offset`` months from ``value``."""
+    month_index = value.year * 12 + value.month - 1 + offset
+    return value.replace(year=month_index // 12, month=month_index % 12 + 1, day=1)
+
+
+def _roc_year_month(value):
+    return f"{value.year - 1911:03d}{value.month:02d}"
+
+
+def fetch_dgbas_cci():
+    """Download the official CCI CSV for the chart's three monthly series.
+
+    The DGBAS query service returns values only (one row per available month),
+    so the returned rows are aligned to the newest available requested months.
+    Requesting a little more history makes the job resilient when the new
+    monthly release has not been published yet.
+    """
+    # CCI is a monthly release.  Query through the preceding calendar month so
+    # the result has no trailing unpublished row (the service does not include
+    # dates in its CSV output).
+    latest_complete_month = _shift_month(
+        _month_start(datetime.now(timezone(timedelta(hours=8))).date()), -1
+    )
+    start_month = _shift_month(latest_complete_month, -17)
+    fields = "[" + "|".join(f"{field} $$" for _, field in CCI_SERIES) + "|]"
+    query = urlencode({
+        "sys": "250",
+        "funid": "queryXls",
+        "ymf": _roc_year_month(start_month),
+        "ymt": _roc_year_month(latest_complete_month),
+        "cyc": "1",
+        "fldlist": fields,
+        "codelist": "[]",
+        "vba": "1",
+        "outmode": "20",
+    })
+    source_url = f"{CCI_QUERY_ENDPOINT}?{query}"
+    request = Request(source_url, headers={"User-Agent": "Mozilla/5.0 (Company Portal CCI Sync)"})
+    ssl_context = ssl.create_default_context()
+    # DGBAS currently presents a certificate chain that lacks a Subject Key
+    # Identifier. Python 3.13+ rejects it in X509 strict mode; keep normal
+    # CA and hostname validation while relaxing only that compatibility check.
+    if hasattr(ssl, "VERIFY_X509_STRICT"):
+        ssl_context.verify_flags &= ~ssl.VERIFY_X509_STRICT
+    with urlopen(request, timeout=30, context=ssl_context) as response:
+        payload = response.read().decode("utf-8-sig")
+
+    rows = []
+    for raw_line in payload.splitlines():
+        values = [value.strip() for value in raw_line.split("|") if value.strip()]
+        if len(values) != len(CCI_SERIES):
+            continue
+        try:
+            rows.append([float(value.replace(",", "")) for value in values])
+        except ValueError:
+            continue
+    if not rows:
+        raise RuntimeError("DGBAS returned no usable CCI data.")
+
+    requested_months = [_shift_month(start_month, offset) for offset in range(18)]
+    months = requested_months[-len(rows):]
+    observations = {slug: [] for slug, _ in CCI_SERIES}
+    for observed_month, values in zip(months, rows):
+        for (slug, _), value in zip(CCI_SERIES, values):
+            observations[slug].append((observed_month, value))
+    return source_url, observations
 
 # -----------------------------------------------------------------------------
 # 模擬資料庫 / 資料提供層 (Mock Data)
@@ -25,8 +205,10 @@ def get_portal_data():
     獲取 Portal 網站所需的資料。
     包含主要類別：
     1. 不動產新聞 (新聞與專題分析)
-    2. 水泥/鋼筋價格 新聞 (水泥價格新聞與鋼筋價格新聞)
-    3. 黃仁勳與 AI 趨勢 (YouTube 影音與新聞報導)
+    2. 都市更新／土地開發新聞
+    3. 建築法規新聞
+    4. 水泥/鋼筋價格 新聞 (水泥價格新聞與鋼筋價格新聞)
+    5. 黃仁勳與 AI 趨勢 (YouTube 影音與新聞報導)
     """
     
 # 1. 不動產新聞
@@ -289,15 +471,15 @@ def get_portal_data():
         }
     ]
 
-    # 4. 行政院主計總處 — 營造工程物價指數 (CCI) 近 12 個月三大核心建材數據 (基期 100)
+    # 4. 行政院主計總處 — 營造工程物價指數 (CCI) 近 12 個月核心建材數據 (基期 100)
+    # CCI is intentionally database-only.  Never fall back to representative
+    # numbers: an empty chart is preferable to presenting synthetic statistics.
     cci_chart_data = {
-        "months": [
-            "2025/08", "2025/09", "2025/10", "2025/11", "2025/12", "2026/01",
-            "2026/02", "2026/03", "2026/04", "2026/05", "2026/06", "2026/07"
-        ],
-        "total_index": [107.2, 107.5, 107.8, 108.1, 108.3, 108.5, 108.4, 108.7, 109.0, 109.2, 109.5, 109.8],
-        "rebar_index": [101.5, 100.8, 102.3, 103.1, 102.5, 101.8, 100.5, 102.0, 103.4, 104.1, 103.8, 104.5],
-        "concrete_index": [112.5, 113.0, 113.8, 114.2, 115.0, 115.5, 116.1, 116.8, 117.2, 117.8, 118.2, 118.7]
+        "months": [],
+        "total_index": [],
+        "cement_index": [],
+        "rebar_index": [],
+        "concrete_index": [],
     }
 
     # 設定英雄區公告內容字典
@@ -307,11 +489,52 @@ def get_portal_data():
         # 設定標題
         "title": "產業動態與營造材料資訊網",
         # 設定副標題文字（調整黃仁勳與 AI 趨勢至最後）
-        "subtitle": "最新產業動態、不動產新聞、水泥/鋼筋價格即時行情、黃仁勳與 AI 趨勢"
+        "subtitle": "最新產業動態、不動產、都市更新、建築法規與營建資訊"
     }
 
+    # MySQL 設定完成後，優先使用資料庫內容；尚未匯入文章時保留既有展示資料。
+    database_data = load_portal_overrides()
+    hero_info = database_data.get("hero", hero_info)
+    cci_chart_data = database_data.get("cci_chart_data", cci_chart_data)
+    database_articles = database_data.get("articles", [])
+    # 這兩個分類由 RSS／MySQL 提供；尚未同步時保留空列表而非顯示示範新聞。
+    urban_renewal_land_development_news = []
+    building_regulations_news = []
+    if database_articles:
+        ai_real_estate_news = [
+            article for article in database_articles if article["category_slug"] == "ai-real-estate"
+        ]
+        material_price_news = [
+            article for article in database_articles if article["category_slug"] == "material-prices"
+        ]
+        urban_renewal_land_development_news = [
+            article
+            for article in database_articles
+            if article["category_slug"] == "urban-renewal-land-development"
+        ]
+        building_regulations_news = [
+            article for article in database_articles if article["category_slug"] == "building-regulations"
+        ]
+        ai_trends_videos = [
+            article
+            for article in database_articles
+            if article["category_slug"] == "jensen-ai-trends" and article["type"] == "video"
+        ]
+        ai_trends_news = [
+            article
+            for article in database_articles
+            if article["category_slug"] == "jensen-ai-trends" and article["type"] == "news"
+        ]
+
     # 合併所有文章與影音資料，將黃仁勳與 AI 趨勢移至最後面
-    all_articles = ai_real_estate_news + material_price_news + ai_trends_videos + ai_trends_news
+    all_articles = (
+        ai_real_estate_news
+        + urban_renewal_land_development_news
+        + building_regulations_news
+        + material_price_news
+        + ai_trends_videos
+        + ai_trends_news
+    )
 
     # 回傳資料字典
     return {
@@ -321,8 +544,17 @@ def get_portal_data():
         "ai_trends_videos": ai_trends_videos,
         # 回傳 AI 趨勢新聞
         "ai_trends_news": ai_trends_news,
+        # 供前端標註新聞的最後成功同步時間
+        "jensen_news_updated_at": (
+            database_data["jensen_news_updated_at"].astimezone(timezone(timedelta(hours=8))).strftime("%Y-%m-%d %H:%M")
+            if database_data.get("jensen_news_updated_at") else None
+        ),
         # 回傳不動產新聞
         "ai_real_estate_news": ai_real_estate_news,
+        # 回傳都市更新／土地開發新聞
+        "urban_renewal_land_development_news": urban_renewal_land_development_news,
+        # 回傳建築法規新聞
+        "building_regulations_news": building_regulations_news,
         # 回傳建材價格新聞
         "material_price_news": material_price_news,
         # 回傳 CCI 圖表資料
@@ -345,6 +577,77 @@ def index():
     return render_template("index.html", data=portal_data)
 
 
+def _sync_request_is_authorized():
+    """Accept Vercel Cron's bearer token (and the same token for manual syncs)."""
+    secret = os.getenv("CRON_SECRET")
+    if not secret:
+        return False
+    authorization = request.headers.get("Authorization", "")
+    return hmac.compare_digest(authorization, f"Bearer {secret}")
+
+
+@app.route("/api/sync/news", methods=["GET", "POST"])
+def sync_all_news():
+    """Daily job: fetch all configured feeds once, then persist them in MySQL."""
+    if not _sync_request_is_authorized():
+        return jsonify({"ok": False, "error": "Unauthorized"}), 401
+    if not database_is_configured():
+        return jsonify({"ok": False, "error": "MySQL 尚未設定"}), 503
+
+    results = {}
+    errors = {}
+    for category_slug in NEWS_FEEDS:
+        try:
+            items = fetch_google_news(category_slug)
+            if not items:
+                raise RuntimeError("RSS 沒有可儲存的新聞項目")
+            results[category_slug] = replace_synced_articles(category_slug, RSS_SOURCE, items)
+        except Exception as error:
+            app.logger.exception("新聞同步失敗（%s）", category_slug)
+            errors[category_slug] = str(error)
+
+    status_code = 200 if not errors else 502
+    return jsonify({"ok": not errors, "synced": results, "errors": errors}), status_code
+
+
+@app.route("/api/sync/cci", methods=["GET", "POST"])
+def sync_cci():
+    """Fetch official DGBAS CCI observations and upsert them into MySQL."""
+    if not _sync_request_is_authorized():
+        return jsonify({"ok": False, "error": "Unauthorized"}), 401
+    if not database_is_configured():
+        return jsonify({"ok": False, "error": "MySQL is not configured."}), 503
+    try:
+        source_url, observations = fetch_dgbas_cci()
+        count = replace_cci_observations(CCI_SOURCE, source_url, observations)
+        months = max(len(points) for points in observations.values())
+        return jsonify({
+            "ok": True,
+            "source": CCI_SOURCE_URL,
+            "months": months,
+            "observations": count,
+        })
+    except Exception as error:
+        app.logger.exception("DGBAS CCI sync failed")
+        return jsonify({"ok": False, "error": str(error)}), 502
+
+
+@app.post("/api/sync/jensen-huang")
+def sync_jensen_huang_news():
+    """Backward-compatible endpoint; use /api/sync/news for the daily job."""
+    if not _sync_request_is_authorized():
+        return jsonify({"ok": False, "error": "Unauthorized"}), 401
+    if not database_is_configured():
+        return jsonify({"ok": False, "error": "MySQL 尚未設定"}), 503
+    try:
+        items = fetch_google_news("jensen-ai-trends")
+        count = replace_synced_articles("jensen-ai-trends", RSS_SOURCE, items)
+        return jsonify({"ok": True, "count": count})
+    except Exception as error:
+        app.logger.exception("黃仁勳新聞同步失敗")
+        return jsonify({"ok": False, "error": str(error)}), 502
+
+
 # -----------------------------------------------------------------------------
 # 程式進入點 (Application Entry Point)
 # -----------------------------------------------------------------------------
@@ -355,4 +658,4 @@ if __name__ == "__main__":
     print(" 本地訪問地址: http://127.0.0.1:5000")
     print(" 區網訪問地址: http://0.0.0.0:5000")
     print("==========================================================")
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(debug=False, host="0.0.0.0", port=5000)

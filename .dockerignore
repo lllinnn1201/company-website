@@ -1,0 +1,6 @@
+.git
+.env
+.playwright-cli
+__pycache__
+*.pyc
+deployment/nas/.env

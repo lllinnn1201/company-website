@@ -156,6 +156,7 @@
 
         html {
             scroll-behavior: smooth;
+            scroll-padding-top: var(--navbar-height, 0px);
             overflow-x: hidden;
             width: 100%;
         }
@@ -172,6 +173,8 @@
             transition: background-color 0.3s ease, color 0.3s ease;
             overflow-x: hidden;
             width: 100%;
+            /* 固定導覽列不佔版面流，預留其實際高度以免遮住首頁內容。 */
+            padding-top: var(--navbar-height, 0px);
         }
 
         /* 全域容器寬度限制 (電腦版上限 1320px 居中，保持黃金比例防止縮小變扁) */
@@ -192,8 +195,9 @@
         .navbar-custom {
             background-color: var(--bg-navbar);
             border-bottom: 2px solid var(--border-color);
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
             z-index: 1030;
             padding: 0.5rem 0;
             transition: background-color 0.3s ease, border-color 0.3s ease;
@@ -355,8 +359,27 @@
             padding: 0.65rem 1.1rem;
             border-radius: 10px;
             box-shadow: var(--card-shadow);
-            transition: background-color 0.3s ease, color 0.3s ease;
+            transition: transform 0.2s ease, background-color 0.3s ease, color 0.3s ease, box-shadow 0.2s ease;
             max-width: 100%;
+        }
+
+        .hero-category-button {
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .hero-category-button:hover,
+        .hero-category-button:focus-visible,
+        .hero-category-button.is-active {
+            background-color: var(--theme-btn-bg);
+            color: var(--accent-cyan) !important;
+            box-shadow: var(--card-shadow-hover);
+            transform: translateY(-3px);
+        }
+
+        .hero-category-button:focus-visible {
+            outline: 3px solid var(--accent-yellow);
+            outline-offset: 3px;
         }
 
         /* 分類標題區 */
@@ -403,6 +426,25 @@
             display: flex;
             flex-direction: column;
             flex-grow: 1;
+        }
+
+        .external-news-link {
+            display: block;
+            height: 100%;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .external-news-card .card-body {
+            padding: 1.15rem 1.25rem;
+        }
+
+        .external-news-card .portal-card-title {
+            font-size: 1.15rem;
+        }
+
+        .external-news-card .summary-box {
+            padding: 0.85rem 1rem;
         }
 
         .portal-card-title {
@@ -560,6 +602,45 @@
             transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
+        .back-to-top-button {
+            position: fixed;
+            right: 1.5rem;
+            bottom: 1.5rem;
+            z-index: 1020;
+            width: 3.25rem;
+            height: 3.25rem;
+            display: grid;
+            place-items: center;
+            border: 2px solid var(--accent-cyan);
+            border-radius: 50%;
+            background-color: var(--bg-card);
+            color: var(--accent-cyan);
+            box-shadow: var(--card-shadow);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(0.75rem);
+            transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease, background-color 0.3s ease;
+        }
+
+        .back-to-top-button.is-visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .back-to-top-button:hover,
+        .back-to-top-button:focus-visible {
+            background-color: var(--accent-cyan);
+            color: #FFFFFF;
+            box-shadow: var(--card-shadow-hover);
+            transform: translateY(-0.2rem);
+        }
+
+        .back-to-top-button:focus-visible {
+            outline: 3px solid var(--accent-yellow);
+            outline-offset: 3px;
+        }
+
         /* 語意輔助類別 (通用深淺色適應) */
         .text-theme-heading {
             color: var(--text-heading) !important;
@@ -632,6 +713,13 @@
                 width: 100%;
             }
 
+            .back-to-top-button {
+                right: 1rem;
+                bottom: 1rem;
+                width: 3rem;
+                height: 3rem;
+            }
+
             .section-header {
                 text-align: left;
                 margin-bottom: 1.25rem;
@@ -700,7 +788,7 @@
     <!-- ========================================================================= -->
     <!-- 頂部導覽列 Navbar -->
     <!-- ========================================================================= -->
-    <nav class="navbar navbar-dark navbar-custom px-2 px-md-3 position-relative">
+    <nav class="navbar navbar-dark navbar-custom px-2 px-md-3">
         <div class="container position-relative d-flex align-items-center justify-content-between px-3 px-md-4">
             <!-- 左側側欄開啟按鈕 -->
             <div class="d-flex align-items-center z-2">
@@ -739,7 +827,7 @@
     <div class="offcanvas offcanvas-start border-end border-secondary border-2 offcanvas-custom" tabindex="-1"
         id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
         <div class="offcanvas-header border-bottom border-secondary pb-3 justify-content-between align-items-center">
-            <h5 class="offcanvas-title text-theme-heading fw-bold m-0 fs-5" id="sidebarMenuLabel">文章目錄選單</h5>
+            <h5 class="offcanvas-title text-theme-heading fw-bold m-0 fs-5" id="sidebarMenuLabel"></h5>
             <button type="button" class="btn-close fs-5" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
 
@@ -761,13 +849,49 @@
             </div>
             <div class="list-group list-group-flush mb-4 gap-1">
                 {% for news in data.ai_real_estate_news %}
-                <a href="#article/{{ news.id }}"
+                <a href="{{ news.full_content.original_url }}" target="_blank" rel="noopener noreferrer"
                     class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 p-3 sidebar-link"
                     id="menu-link-{{ news.id }}">
                     <div class="fw-semibold text-truncate fs-6"><i class="bi bi-file-text-fill text-warning me-2"></i>{{
                         news.title }}</div>
                     <small class="text-info ps-4 d-block mt-1 fw-semibold" style="font-size: 0.85rem;"><i
                             class="bi bi-calendar3 me-1"></i>{{ news.date }}</small>
+                </a>
+                {% endfor %}
+            </div>
+
+            <hr class="border-secondary my-3">
+
+            <!-- 分類二：都市更新/土地開發新聞 -->
+            <div class="text-info fw-bold fs-5 mb-3 text-uppercase d-flex align-items-center gap-2 px-1">
+                <i class="bi bi-map text-primary fs-5"></i>
+                <span>都市更新/土地開發新聞</span>
+            </div>
+            <div class="list-group list-group-flush mb-4 gap-1">
+                {% for news in data.urban_renewal_land_development_news %}
+                <a href="{{ news.full_content.original_url }}" target="_blank" rel="noopener noreferrer"
+                    class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 p-3 sidebar-link"
+                    id="menu-link-{{ news.id }}">
+                    <div class="fw-semibold text-truncate fs-6"><i class="bi bi-file-text-fill text-primary me-2"></i>{{ news.title }}</div>
+                    <small class="text-info ps-4 d-block mt-1 fw-semibold" style="font-size: 0.85rem;"><i class="bi bi-calendar3 me-1"></i>{{ news.date }}</small>
+                </a>
+                {% endfor %}
+            </div>
+
+            <hr class="border-secondary my-3">
+
+            <!-- 分類三：建築法規新聞 -->
+            <div class="text-info fw-bold fs-5 mb-3 text-uppercase d-flex align-items-center gap-2 px-1">
+                <i class="bi bi-journal-text text-danger fs-5"></i>
+                <span>建築法規新聞</span>
+            </div>
+            <div class="list-group list-group-flush mb-4 gap-1">
+                {% for news in data.building_regulations_news %}
+                <a href="{{ news.full_content.original_url }}" target="_blank" rel="noopener noreferrer"
+                    class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 p-3 sidebar-link"
+                    id="menu-link-{{ news.id }}">
+                    <div class="fw-semibold text-truncate fs-6"><i class="bi bi-file-text-fill text-danger me-2"></i>{{ news.title }}</div>
+                    <small class="text-info ps-4 d-block mt-1 fw-semibold" style="font-size: 0.85rem;"><i class="bi bi-calendar3 me-1"></i>{{ news.date }}</small>
                 </a>
                 {% endfor %}
             </div>
@@ -787,7 +911,7 @@
             </div>
             <div class="list-group list-group-flush mb-4 gap-1 ps-2">
                 {% for news in data.material_price_news %}
-                <a href="#article/{{ news.id }}"
+                <a href="{{ news.full_content.original_url }}" target="_blank" rel="noopener noreferrer"
                     class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 p-2.5 sidebar-link"
                     id="menu-link-{{ news.id }}">
                     <div class="fw-semibold text-truncate fs-6"><i class="bi bi-file-text-fill text-success me-2"></i>{{
@@ -804,12 +928,12 @@
                 <span>營造材料價格走勢圖</span>
             </div>
             <div class="list-group list-group-flush mb-4 gap-1 ps-2">
-                <a href="#section-cci-chart"
-                    class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 p-2.5 sidebar-link"
+                <button type="button"
+                    class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 p-2.5 sidebar-link w-100 text-start"
                     id="menu-link-cci-chart">
                     <div class="fw-semibold text-truncate fs-6"><i
                             class="bi bi-bar-chart-line-fill text-success me-2"></i>營造材料價格走勢圖</div>
-                </a>
+                </button>
             </div>
 
             <hr class="border-secondary my-3">
@@ -845,7 +969,7 @@
             </div>
             <div class="list-group list-group-flush mb-4 gap-1 ps-2">
                 {% for news in data.ai_trends_news %}
-                <a href="#article/{{ news.id }}"
+                <a href="{{ news.full_content.original_url }}" target="_blank" rel="noopener noreferrer"
                     class="list-group-item list-group-item-action bg-transparent border-0 rounded-3 p-2.5 sidebar-link"
                     id="menu-link-{{ news.id }}">
                     <div class="fw-semibold text-truncate fs-6"><i class="bi bi-newspaper text-info me-2"></i>{{
@@ -887,18 +1011,31 @@
                         </p>
 
                         <div class="d-flex flex-wrap justify-content-center gap-3">
-                            <div class="hero-stat-card d-flex align-items-center gap-2">
+                            <a href="#category-ai-news" class="hero-stat-card hero-category-button d-flex align-items-center gap-2"
+                                data-category-target="category-ai-news">
                                 <i class="bi bi-building text-warning fs-4"></i>
                                 <span>不動產新聞</span>
-                            </div>
-                            <div class="hero-stat-card d-flex align-items-center gap-2">
+                            </a>
+                            <a href="#category-urban-renewal-land-development" class="hero-stat-card hero-category-button d-flex align-items-center gap-2"
+                                data-category-target="category-urban-renewal-land-development">
+                                <i class="bi bi-map text-primary fs-4"></i>
+                                <span>都市更新/土地開發新聞</span>
+                            </a>
+                            <a href="#category-building-regulations" class="hero-stat-card hero-category-button d-flex align-items-center gap-2"
+                                data-category-target="category-building-regulations">
+                                <i class="bi bi-journal-text text-danger fs-4"></i>
+                                <span>建築法規新聞</span>
+                            </a>
+                            <a href="#category-material-prices" class="hero-stat-card hero-category-button d-flex align-items-center gap-2"
+                                data-category-target="category-material-prices">
                                 <i class="bi bi-box-seam text-success fs-4"></i>
                                 <span>水泥/鋼筋價格</span>
-                            </div>
-                            <div class="hero-stat-card d-flex align-items-center gap-2">
+                            </a>
+                            <a href="#category-ai-trends" class="hero-stat-card hero-category-button d-flex align-items-center gap-2"
+                                data-category-target="category-ai-trends">
                                 <i class="bi bi-cpu-fill text-info fs-4"></i>
                                 <span>黃仁勳與 AI 趨勢</span>
-                            </div>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -922,6 +1059,22 @@
                 <div class="row g-4">
                     {% for news in data.ai_real_estate_news %}
                     <div class="col-12 col-md-6">
+                        {% if news.type == 'news' and news.full_content.original_url %}
+                        <a href="{{ news.full_content.original_url }}" target="_blank" rel="noopener noreferrer"
+                            class="external-news-link" aria-label="開啟原始新聞：{{ news.title }}">
+                            <article class="portal-card external-news-card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center gap-3 mb-2">
+                                        <span class="text-info fw-bold fs-6"><i class="bi bi-clock-history me-1"></i>{{ news.date }}</span>
+                                        <i class="bi bi-box-arrow-up-right text-info" aria-hidden="true"></i>
+                                    </div>
+                                    <h3 class="h5 fw-bold portal-card-title my-2" style="line-height: 1.4;">{{ news.title }}</h3>
+                                    <div class="mb-2">{% for tag in news.tags %}<span class="tag-badge">{{ tag }}</span>{% endfor %}</div>
+                                    {% if news.summary %}<p class="text-theme-body mb-0 fs-6" style="line-height: 1.6;">{{ news.summary }}</p>{% endif %}
+                                </div>
+                            </article>
+                        </a>
+                        {% else %}
                         <article class="portal-card">
                             <img src="{{ news.cover_image }}" class="portal-card-cover" alt="{{ news.title }}"
                                 loading="lazy">
@@ -964,6 +1117,7 @@
                                 </div>
                             </div>
                         </article>
+                        {% endif %}
                     </div>
                     {% endfor %}
                 </div>
@@ -971,7 +1125,79 @@
 
             <hr class="border-info opacity-50 my-5">
 
-            <!-- 分類二：水泥/鋼筋價格卡片 -->
+            <!-- 分類二：都市更新/土地開發新聞卡片 -->
+            <section id="category-urban-renewal-land-development" class="mb-5">
+                <div class="section-header d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="d-flex align-items-center gap-2 mb-1">
+                            <i class="bi bi-map text-primary fs-2"></i> 都市更新/土地開發新聞
+                        </h2>
+                        <p class="text-theme-body mb-0 fs-6">追蹤都市更新、危老重建、土地開發與重大區域建設的最新動態。</p>
+                    </div>
+                </div>
+                <div class="row g-4">
+                    {% for news in data.urban_renewal_land_development_news %}
+                    <div class="col-12 col-md-6">
+                        <a href="{{ news.full_content.original_url }}" target="_blank" rel="noopener noreferrer"
+                            class="external-news-link" aria-label="開啟原始新聞：{{ news.title }}">
+                            <article class="portal-card external-news-card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center gap-3 mb-2">
+                                        <span class="text-info fw-bold fs-6"><i class="bi bi-clock-history me-1"></i>{{ news.date }}</span>
+                                        <i class="bi bi-box-arrow-up-right text-info" aria-hidden="true"></i>
+                                    </div>
+                                    <h3 class="h5 fw-bold portal-card-title my-2" style="line-height: 1.4;">{{ news.title }}</h3>
+                                    <div class="mb-2">{% for tag in news.tags %}<span class="tag-badge">{{ tag }}</span>{% endfor %}</div>
+                                    {% if news.summary %}<p class="text-theme-body mb-0 fs-6" style="line-height: 1.6;">{{ news.summary }}</p>{% endif %}
+                                </div>
+                            </article>
+                        </a>
+                    </div>
+                    {% else %}
+                    <p class="text-theme-muted mb-0">尚無新聞；完成每日 RSS 同步後將自動顯示。</p>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <hr class="border-info opacity-50 my-5">
+
+            <!-- 分類三：建築法規新聞卡片 -->
+            <section id="category-building-regulations" class="mb-5">
+                <div class="section-header d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="d-flex align-items-center gap-2 mb-1">
+                            <i class="bi bi-journal-text text-danger fs-2"></i> 建築法規新聞
+                        </h2>
+                        <p class="text-theme-body mb-0 fs-6">整理建築管理、使用執照、消防、耐震及相關法規政策的最新消息。</p>
+                    </div>
+                </div>
+                <div class="row g-4">
+                    {% for news in data.building_regulations_news %}
+                    <div class="col-12 col-md-6">
+                        <a href="{{ news.full_content.original_url }}" target="_blank" rel="noopener noreferrer"
+                            class="external-news-link" aria-label="開啟原始新聞：{{ news.title }}">
+                            <article class="portal-card external-news-card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center gap-3 mb-2">
+                                        <span class="text-info fw-bold fs-6"><i class="bi bi-clock-history me-1"></i>{{ news.date }}</span>
+                                        <i class="bi bi-box-arrow-up-right text-info" aria-hidden="true"></i>
+                                    </div>
+                                    <h3 class="h5 fw-bold portal-card-title my-2" style="line-height: 1.4;">{{ news.title }}</h3>
+                                    <div class="mb-2">{% for tag in news.tags %}<span class="tag-badge">{{ tag }}</span>{% endfor %}</div>
+                                    {% if news.summary %}<p class="text-theme-body mb-0 fs-6" style="line-height: 1.6;">{{ news.summary }}</p>{% endif %}
+                                </div>
+                            </article>
+                        </a>
+                    </div>
+                    {% else %}
+                    <p class="text-theme-muted mb-0">尚無新聞；完成每日 RSS 同步後將自動顯示。</p>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <hr class="border-info opacity-50 my-5">
+
+            <!-- 分類四：水泥/鋼筋價格卡片 -->
             <section id="category-material-prices" class="mb-5">
                 <div class="section-header d-flex justify-content-between align-items-center mb-4">
                     <div>
@@ -992,6 +1218,22 @@
                     <div class="row g-4">
                         {% for news in data.material_price_news %}
                         <div class="col-12 col-md-6">
+                            {% if news.type == 'news' and news.full_content.original_url %}
+                            <a href="{{ news.full_content.original_url }}" target="_blank" rel="noopener noreferrer"
+                                class="external-news-link" aria-label="開啟原始新聞：{{ news.title }}">
+                                <article class="portal-card external-news-card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center gap-3 mb-2">
+                                            <span class="text-info fw-bold fs-6"><i class="bi bi-clock-history me-1"></i>{{ news.date }}</span>
+                                            <i class="bi bi-box-arrow-up-right text-info" aria-hidden="true"></i>
+                                        </div>
+                                        <h3 class="h5 fw-bold portal-card-title my-2" style="line-height: 1.4;">{{ news.title }}</h3>
+                                        <div class="mb-2">{% for tag in news.tags %}<span class="tag-badge">{{ tag }}</span>{% endfor %}</div>
+                                        {% if news.summary %}<p class="text-theme-body mb-0 fs-6" style="line-height: 1.6;">{{ news.summary }}</p>{% endif %}
+                                    </div>
+                                </article>
+                            </a>
+                            {% else %}
                             <article class="portal-card">
                                 <img src="{{ news.cover_image }}" class="portal-card-cover" alt="{{ news.title }}"
                                     loading="lazy">
@@ -1034,12 +1276,13 @@
                                     </div>
                                 </div>
                             </article>
+                            {% endif %}
                         </div>
                         {% endfor %}
                     </div>
                 </div>
 
-                <!-- 子區塊 2.2：三大核心建材價格走勢圖 -->
+                <!-- 子區塊 2.2：核心建材價格走勢圖 -->
                 <div class="mt-5" id="section-cci-chart">
                     <div class="portal-card p-3 p-md-4">
                         <div
@@ -1049,7 +1292,7 @@
                                     <i class="bi bi-graph-up-arrow text-success fs-3"></i>
                                     <span>營造材料價格走勢圖（行政院主計總處 CCI）</span>
                                 </h3>
-                                <p class="text-theme-muted mb-0 fs-6">近 12 個月營造工程物價與三大核心營造材料指數變動走勢圖（以基期指數 100 為基準）</p>
+                                <p class="text-theme-muted mb-0 fs-6">近 12 個月營造工程物價與水泥、鋼筋、預拌混凝土指數變動走勢圖（以基期指數 100 為基準）</p>
                             </div>
                             <div class="text-md-end">
                                 <span
@@ -1168,13 +1411,34 @@
                         class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary">
                         <div class="d-flex align-items-center gap-2">
                             <i class="bi bi-newspaper text-info fs-3"></i>
-                            <h3 class="h4 fw-bold text-theme-heading mb-0">新聞報導</h3>
+                            <div>
+                                <h3 class="h4 fw-bold text-theme-heading mb-0">新聞報導</h3>
+                                {% if data.jensen_news_updated_at %}
+                                <small class="text-theme-muted">Google News RSS 同步：{{ data.jensen_news_updated_at }}（台北時間）</small>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
 
                     <div class="row g-4">
                         {% for news in data.ai_trends_news %}
                         <div class="col-12 col-md-6">
+                            {% if news.type == 'news' and news.full_content.original_url %}
+                            <a href="{{ news.full_content.original_url }}" target="_blank" rel="noopener noreferrer"
+                                class="external-news-link" aria-label="開啟原始新聞：{{ news.title }}">
+                                <article class="portal-card external-news-card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center gap-3 mb-2">
+                                            <span class="text-info fw-bold fs-6"><i class="bi bi-clock-history me-1"></i>{{ news.date }}</span>
+                                            <i class="bi bi-box-arrow-up-right text-info" aria-hidden="true"></i>
+                                        </div>
+                                        <h3 class="h5 fw-bold portal-card-title my-2" style="line-height: 1.4;">{{ news.title }}</h3>
+                                        <div class="mb-2">{% for tag in news.tags %}<span class="tag-badge">{{ tag }}</span>{% endfor %}</div>
+                                        {% if news.summary %}<p class="text-theme-body mb-0 fs-6" style="line-height: 1.6;">{{ news.summary }}</p>{% endif %}
+                                    </div>
+                                </article>
+                            </a>
+                            {% else %}
                             <article class="portal-card">
                                 <img src="{{ news.cover_image }}" class="portal-card-cover" alt="{{ news.title }}"
                                     loading="lazy">
@@ -1217,8 +1481,14 @@
                                     </div>
                                 </div>
                             </article>
+                            {% endif %}
                         </div>
                         {% endfor %}
+                        {% if not data.ai_trends_news %}
+                        <div class="col-12">
+                            <p class="text-theme-muted mb-0">目前無法取得新聞，請稍後重新整理頁面。</p>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </section>
@@ -1270,7 +1540,11 @@
                                 {{ item.title }}
                             </h1>
                             <p class="fs-5 text-info fw-semibold mb-3 text-center" style="line-height: 1.6;">
+                                {% if item.full_content.subtitle == "此卡片由 Google News RSS 同步，內容請以原始媒體報導為準。" %}
+                                此新聞由 Google News RSS 同步，內容請以原始媒體報導為準。
+                                {% else %}
                                 {{ item.full_content.subtitle }}
+                                {% endif %}
                             </p>
 
                             <!-- 文章標籤列 -->
@@ -1315,6 +1589,8 @@
                                 class="text-theme-heading fw-bold fs-5 mb-3 d-flex align-items-center gap-2 border-bottom border-secondary pb-2">
                                 {% if item.type == 'video' %}
                                 <i class="bi bi-film text-info fs-4"></i> 影片重點摘要
+                                {% elif item.is_rss %}
+                                <i class="bi bi-rss text-info fs-4"></i> Google News RSS 摘要
                                 {% else %}
                                 <i class="bi bi-stars text-info fs-4"></i> 新聞重點摘要
                                 {% endif %}
@@ -1324,24 +1600,39 @@
                             </p>
                         </div>
 
-                        <!-- 完整新聞段落區 -->
+                        <!-- 報導內容／原文導流區 -->
                         <div class="article-content-body mb-5">
                             <h3 class="fw-bold text-theme-heading mb-4 d-flex align-items-center gap-2 border-left ps-3"
                                 style="border-left: 5px solid var(--accent-cyan);">
                                 {% if item.type == 'video' %}
                                 <i class="bi bi-file-earmark-text text-info"></i> 影片新聞稿內文
+                                {% elif item.is_rss %}
+                                <i class="bi bi-box-arrow-up-right text-info"></i> 完整報導請見原始媒體
                                 {% else %}
                                 <i class="bi bi-file-earmark-text text-info"></i> 完整新聞報導內文
                                 {% endif %}
                             </h3>
+                            {% if item.is_rss %}
+                            <div class="p-4 rounded-3 border border-info border-opacity-50 bg-theme-card">
+                                <p class="article-paragraph mb-3">
+                                    本站透過 Google News RSS 提供新聞標題、摘要與來源連結；完整報導由原始媒體發布，請前往來源網站閱讀。
+                                </p>
+                                <a href="{{ item.full_content.original_url }}" target="_blank" rel="noopener noreferrer"
+                                    class="btn btn-outline-info py-2 px-3 fw-bold">
+                                    前往原始媒體閱讀完整報導 <i class="bi bi-box-arrow-up-right ms-1"></i>
+                                </a>
+                            </div>
+                            {% else %}
                             {% for para in item.full_content.paragraphs %}
                             <p class="article-paragraph">
                                 {{ para }}
                             </p>
                             {% endfor %}
+                            {% endif %}
                         </div>
 
                         <!-- 延伸分析與專家洞察盒 -->
+                        {% if item.full_content.extended_analysis %}
                         <div class="bg-theme-card p-4 rounded-4 mb-5 border border-secondary">
                             <div
                                 class="text-theme-heading fw-bold fs-5 mb-3 d-flex align-items-center gap-2 border-bottom border-secondary pb-2">
@@ -1363,20 +1654,21 @@
                                 {% endfor %}
                             </div>
                         </div>
+                        {% endif %}
 
                         <!-- 原始新聞參考資訊區 -->
                         <div
                             class="p-4 rounded-3 border border-secondary mb-5 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 reference-box">
                             <div>
                                 <div class="text-info fw-bold fs-6 mb-1">
-                                    {% if item.type == 'video' %}影片出處 / 原創影片連結{% else %}新聞出處 / 原文參考{% endif %}
+                                    {% if item.type == 'video' %}影片出處 / 原創影片連結{% elif item.is_rss %}新聞來源 / 完整報導{% else %}新聞出處 / 原文參考{% endif %}
                                 </div>
                                 <div class="text-theme-heading fs-6 fw-semibold">{{ item.full_content.original_title }}
                                 </div>
                             </div>
                             <a href="{{ item.full_content.original_url }}" target="_blank" rel="noopener noreferrer"
                                 class="btn btn-outline-info text-nowrap py-2 px-3 fw-bold">
-                                {% if item.type == 'video' %}觀看原創影片{% else %}查看新聞原文{% endif %} <i
+                                {% if item.type == 'video' %}觀看原創影片{% elif item.is_rss %}前往原始媒體{% else %}查看新聞原文{% endif %} <i
                                     class="bi bi-box-arrow-up-right ms-1"></i>
                             </a>
                         </div>
@@ -1418,6 +1710,10 @@
         </div>
     </footer>
 
+    <button type="button" class="back-to-top-button" id="back-to-top-button" aria-label="回到頁面頂端" title="回到頂端">
+        <i class="bi bi-arrow-up fs-4" aria-hidden="true"></i>
+    </button>
+
 
     <!-- ========================================================================= -->
     <!-- 5. Bootstrap 5.3 CDN (JS Bundle 包含 Popper) -->
@@ -1431,9 +1727,37 @@
     <!-- ========================================================================= -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const navbar = document.querySelector('.navbar-custom');
+
+            // 依目前螢幕尺寸與字體實際高度保留固定導覽列空間。
+            function syncNavbarHeight() {
+                if (navbar) {
+                    document.documentElement.style.setProperty('--navbar-height', `${navbar.offsetHeight}px`);
+                }
+            }
+
+            syncNavbarHeight();
+            window.addEventListener('load', syncNavbarHeight);
+            window.addEventListener('resize', syncNavbarHeight);
+
             const viewOverview = document.getElementById('view-overview');
             const viewArticle = document.getElementById('view-article');
             const sidebarMenuEl = document.getElementById('sidebarMenu');
+            const backToTopButton = document.getElementById('back-to-top-button');
+
+            function updateBackToTopButton() {
+                if (backToTopButton) {
+                    backToTopButton.classList.toggle('is-visible', window.scrollY > 300);
+                }
+            }
+
+            if (backToTopButton) {
+                backToTopButton.addEventListener('click', function () {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+                window.addEventListener('scroll', updateBackToTopButton, { passive: true });
+                updateBackToTopButton();
+            }
 
             // -----------------------------------------------------------------
             // 7. 深色 / 淺色主題動態切換控制器 (Theme Switcher Logic)
@@ -1503,6 +1827,17 @@
                             pointRadius: 4,
                             pointHoverRadius: 7,
                             pointBackgroundColor: '#0284C7'
+                        },
+                        {
+                            label: '水泥指數',
+                            data: cciData.cement_index,
+                            borderColor: '#F59E0B',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.3,
+                            pointRadius: 4,
+                            pointHoverRadius: 7,
+                            pointBackgroundColor: '#F59E0B'
                         },
                         {
                             label: '鋼筋指數',
@@ -1596,6 +1931,11 @@
         function handleRoute() {
             const hash = window.location.hash || '#overview';
 
+            // 首頁預設不選取分類；只有導向分類內容時才標示對應按鈕。
+            document.querySelectorAll('.hero-category-button').forEach(button => {
+                button.classList.toggle('is-active', button.dataset.categoryTarget === hash.slice(1));
+            });
+
             // 取消所有側邊欄高亮
             document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
 
@@ -1635,10 +1975,18 @@
                     overviewLink.classList.add('active');
                 }
 
+                // 圖表選單採點擊時捲動，避免網址保留 hash 而在重新整理時自動跳轉。
+                if (hash === '#section-cci-chart') {
+                    history.replaceState(null, '', window.location.pathname + window.location.search);
+                    window.scrollTo({ top: 0, behavior: 'auto' });
                 // 若 Hash 指定卡片分類區域 (如 #category-ai-trends)
-                if (hash && hash !== '#overview') {
-                    const targetSection = document.querySelector(hash);
+                } else if (hash && hash !== '#overview') {
+                    const targetSection = document.getElementById(hash.slice(1));
                     if (targetSection) {
+                        const activeMenuLink = document.querySelector(`.sidebar-link[href="${hash}"]`);
+                        if (activeMenuLink) {
+                            activeMenuLink.classList.add('active');
+                        }
                         setTimeout(() => {
                             targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                         }, 50);
@@ -1650,8 +1998,49 @@
         }
 
         // 監聽網址 Hash 變更與頁面初次載入
+        // 重新整理時一律回到首頁頂端，不沿用上一個分類或文章的 Hash 路由。
+        // 保留首次直接開啟帶 Hash 網址的行為，僅在瀏覽器「重新整理」時重設。
+        const navigationEntry = performance.getEntriesByType('navigation')[0];
+        const isPageReload = navigationEntry && navigationEntry.type === 'reload';
+        if (isPageReload) {
+            if (window.location.hash) {
+                history.replaceState(null, '', window.location.pathname + window.location.search);
+            }
+            if ('scrollRestoration' in history) {
+                history.scrollRestoration = 'manual';
+            }
+            window.scrollTo({ top: 0, behavior: 'auto' });
+        }
+
         window.addEventListener('hashchange', handleRoute);
         handleRoute();
+
+        // 圖表選單只在點擊當下捲動，不變更網址，避免重新整理後自動跳轉。
+        const cciChartMenuLink = document.getElementById('menu-link-cci-chart');
+        if (cciChartMenuLink) {
+            cciChartMenuLink.addEventListener('click', function (event) {
+                event.preventDefault();
+                viewArticle.classList.remove('active');
+                viewOverview.classList.add('active');
+                document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
+                cciChartMenuLink.classList.add('active');
+
+                const cciChartSection = document.getElementById('section-cci-chart');
+                const scrollToCCIChart = function () {
+                    if (cciChartSection) {
+                        cciChartSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                };
+
+                const bsOffcanvas = sidebarMenuEl && bootstrap.Offcanvas.getInstance(sidebarMenuEl);
+                if (bsOffcanvas) {
+                    sidebarMenuEl.addEventListener('hidden.bs.offcanvas', scrollToCCIChart, { once: true });
+                    bsOffcanvas.hide();
+                } else {
+                    scrollToCCIChart();
+                }
+            });
+        }
 
         // 點擊側邊欄連結時，自動收起 Drawer
         document.querySelectorAll('#sidebarMenu a').forEach(link => {
