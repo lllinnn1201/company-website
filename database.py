@@ -303,13 +303,6 @@ def _fetch_articles(connection):
             else:
                 content["paragraphs"].append(block["body"])
 
-    rss_category_tags = {
-        "ai-real-estate": ["不動產", "房市"],
-        "urban-renewal-land-development": ["都市更新", "土地開發"],
-        "building-regulations": ["建築法規", "建築管理"],
-        "material-prices": ["水泥", "鋼筋", "建材行情"],
-        "jensen-ai-trends": ["黃仁勳", "AI"],
-    }
     articles = []
     for row in rows:
         source_name = row["source_name"] or ""
@@ -317,12 +310,10 @@ def _fetch_articles(connection):
         if is_rss:
             # Older databases can retain incorrect article_tags rows from a
             # previous installation.  RSS records already hold their real
-            # publisher and category, so build these display tags from the
-            # canonical article fields instead of trusting stale join rows.
+            # publisher, so show that single canonical label instead of
+            # trusting stale join rows or repeating a category-wide tag.
             publisher = source_name.partition("|")[2]
-            tags = [f"#{tag}" for tag in rss_category_tags.get(row["category_slug"], [])]
-            if publisher:
-                tags.append(f"#{publisher}")
+            tags = [f"#{publisher}"] if publisher else []
         else:
             tags = tags_by_article.get(row["id"], [])
         content = content_by_article.get(row["id"], {"paragraphs": [], "extended_analysis": []})
