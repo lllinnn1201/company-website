@@ -164,9 +164,31 @@ def replace_synced_articles(category_slug, source, articles):
             if not category:
                 raise RuntimeError(f"找不到新聞分類：{category_slug}。請先執行 database/seed.sql。")
 
+            # Some pre-existing installations were created without the
+            # article_tags foreign-key cascade.  Remove tag mappings
+            # explicitly before replacing a feed, otherwise an orphaned old
+            # mapping can be attached to a later article ID and show a wrong
+            # publisher tag on every card.
+            cursor.execute(
+                """
+                DELETE at
+                FROM article_tags AS at
+                INNER JOIN articles AS a ON a.id = at.article_id
+                WHERE a.category_id = %s AND a.source_name LIKE %s
+                """,
+                (category["id"], f"RSS:{source}|%"),
+            )
             cursor.execute(
                 "DELETE FROM articles WHERE category_id = %s AND source_name LIKE %s",
                 (category["id"], f"RSS:{source}|%"),
+            )
+            cursor.execute(
+                """
+                DELETE at
+                FROM article_tags AS at
+                LEFT JOIN articles AS a ON a.id = at.article_id
+                WHERE a.id IS NULL
+                """
             )
             for article in articles:
                 cursor.execute(
