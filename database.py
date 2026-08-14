@@ -303,8 +303,28 @@ def _fetch_articles(connection):
             else:
                 content["paragraphs"].append(block["body"])
 
+    rss_category_tags = {
+        "ai-real-estate": ["不動產", "房市"],
+        "urban-renewal-land-development": ["都市更新", "土地開發"],
+        "building-regulations": ["建築法規", "建築管理"],
+        "material-prices": ["水泥", "鋼筋", "建材行情"],
+        "jensen-ai-trends": ["黃仁勳", "AI"],
+    }
     articles = []
     for row in rows:
+        source_name = row["source_name"] or ""
+        is_rss = source_name.startswith("RSS:google-news-rss|")
+        if is_rss:
+            # Older databases can retain incorrect article_tags rows from a
+            # previous installation.  RSS records already hold their real
+            # publisher and category, so build these display tags from the
+            # canonical article fields instead of trusting stale join rows.
+            publisher = source_name.partition("|")[2]
+            tags = [f"#{tag}" for tag in rss_category_tags.get(row["category_slug"], [])]
+            if publisher:
+                tags.append(f"#{publisher}")
+        else:
+            tags = tags_by_article.get(row["id"], [])
         content = content_by_article.get(row["id"], {"paragraphs": [], "extended_analysis": []})
         content.update(
             {
@@ -312,7 +332,7 @@ def _fetch_articles(connection):
                 # current wording without requiring a full RSS re-sync.
                 "subtitle": (
                     "此新聞由 Google News RSS 同步，內容請以原始媒體報導為準。"
-                    if row["source_name"].startswith("RSS:google-news-rss|")
+                    if is_rss
                     else row["subtitle"] or row["summary"] or ""
                 ),
                 "original_title": row["original_title"] or row["title"],
@@ -331,9 +351,9 @@ def _fetch_articles(connection):
                 "duration": row["duration_text"],
                 "cover_image": row["cover_image_url"],
                 "embed_url": row["embed_url"],
-                "tags": tags_by_article.get(row["id"], []),
+                "tags": tags,
                 "summary": row["summary"] or "",
-                "is_rss": row["source_name"].startswith("RSS:google-news-rss|"),
+                "is_rss": is_rss,
                 "full_content": content,
             }
         )
