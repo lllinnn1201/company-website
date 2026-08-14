@@ -307,6 +307,7 @@ def _fetch_articles(connection):
     for row in rows:
         source_name = row["source_name"] or ""
         is_rss = source_name.startswith("RSS:google-news-rss|")
+        title = row["title"]
         if is_rss:
             # Older databases can retain incorrect article_tags rows from a
             # previous installation.  RSS records already hold their real
@@ -314,6 +315,12 @@ def _fetch_articles(connection):
             # trusting stale join rows or repeating a category-wide tag.
             publisher = source_name.partition("|")[2]
             tags = [f"#{publisher}"] if publisher else []
+            # Google News appends the publisher to each RSS title.  It is
+            # already shown as the card's only tag, so remove duplicate
+            # trailing publisher labels (some feeds append it twice).
+            publisher_suffix = f" - {publisher}"
+            while publisher and title.endswith(publisher_suffix):
+                title = title[: -len(publisher_suffix)].rstrip()
         else:
             tags = tags_by_article.get(row["id"], [])
         content = content_by_article.get(row["id"], {"paragraphs": [], "extended_analysis": []})
@@ -336,7 +343,7 @@ def _fetch_articles(connection):
                 "category": row["category_name"] or "未分類",
                 "category_slug": row["category_slug"],
                 "type": row["article_type"],
-                "title": row["title"],
+                "title": title,
                 "speaker": row["speaker"],
                 "date": row["published_on"].isoformat(),
                 "duration": row["duration_text"],
