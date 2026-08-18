@@ -379,19 +379,25 @@ def load_portal_overrides():
 
                 cursor.execute(
                     """
-                    SELECT source, finished_at
-                    FROM sync_runs
-                    WHERE status = 'success' AND source = 'google-news-rss:jensen-ai-trends'
-                    ORDER BY finished_at DESC, id DESC LIMIT 1
+                    SELECT latest.source, latest.finished_at
+                    FROM sync_runs AS latest
+                    INNER JOIN (
+                        SELECT source, MAX(id) AS latest_id
+                        FROM sync_runs
+                        WHERE status = 'success' AND source LIKE 'google-news-rss:%'
+                        GROUP BY source
+                    ) AS successful_sync ON successful_sync.latest_id = latest.id
                     """
                 )
-                latest_jensen_sync = cursor.fetchone()
-                if latest_jensen_sync and latest_jensen_sync["finished_at"]:
-                    # MySQL TIMESTAMP is returned by PyMySQL without tzinfo;
-                    # sync runs are explicitly written with UTC_TIMESTAMP().
-                    overrides["jensen_news_updated_at"] = latest_jensen_sync["finished_at"].replace(
-                        tzinfo=timezone.utc
-                    )
+                latest_news_syncs = {}
+                for sync in cursor.fetchall():
+                    if sync["finished_at"]:
+                        # MySQL TIMESTAMP is returned by PyMySQL without tzinfo;
+                        # sync runs are explicitly written with UTC_TIMESTAMP().
+                        category_slug = sync["source"].removeprefix("google-news-rss:")
+                        latest_news_syncs[category_slug] = sync["finished_at"].replace(tzinfo=timezone.utc)
+                if latest_news_syncs:
+                    overrides["news_sync_times"] = latest_news_syncs
 
                 cursor.execute(
                     """

@@ -542,13 +542,13 @@ def get_portal_data():
         "hero": hero_info,
         # 回傳 AI 趨勢影音
         "ai_trends_videos": ai_trends_videos,
+        # 回傳各新聞分類的最後成功同步時間
+        "news_sync_times": {
+            category_slug: synced_at.astimezone(timezone(timedelta(hours=8))).strftime("%Y-%m-%d %H:%M")
+            for category_slug, synced_at in database_data.get("news_sync_times", {}).items()
+        },
         # 回傳 AI 趨勢新聞
         "ai_trends_news": ai_trends_news,
-        # 供前端標註新聞的最後成功同步時間
-        "jensen_news_updated_at": (
-            database_data["jensen_news_updated_at"].astimezone(timezone(timedelta(hours=8))).strftime("%Y-%m-%d %H:%M")
-            if database_data.get("jensen_news_updated_at") else None
-        ),
         # 回傳不動產新聞
         "ai_real_estate_news": ai_real_estate_news,
         # 回傳都市更新／土地開發新聞

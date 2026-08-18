@@ -393,6 +393,15 @@
             font-weight: 800;
             font-size: 1.8rem;
             color: var(--text-heading);
+            flex-wrap: wrap;
+        }
+
+        .news-sync-status {
+            color: var(--accent-cyan);
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+            white-space: nowrap;
         }
 
         /* 總覽卡片設計 */
@@ -731,6 +740,13 @@
                 font-size: 1.35rem;
             }
 
+            .news-sync-status {
+                width: 100%;
+                margin-left: 2rem;
+                margin-top: -0.15rem;
+                white-space: normal;
+            }
+
             .portal-card {
                 margin-bottom: 1rem;
             }
@@ -1051,6 +1067,9 @@
                     <div>
                         <h2 class="d-flex align-items-center gap-2 mb-1">
                             <i class="bi bi-building text-warning fs-2"></i> 不動產新聞
+                            {% if data.news_sync_times.get('ai-real-estate') %}
+                            <span class="news-sync-status">· Google News RSS 同步：{{ data.news_sync_times.get('ai-real-estate') }}（台北時間）</span>
+                            {% endif %}
                         </h2>
                         <p class="text-theme-body mb-0 fs-6">統整臺灣國內不動產市場、BIM 工程應用與動態估價之最新新聞內文。</p>
                     </div>
@@ -1131,6 +1150,9 @@
                     <div>
                         <h2 class="d-flex align-items-center gap-2 mb-1">
                             <i class="bi bi-map text-primary fs-2"></i> 都市更新/土地開發新聞
+                            {% if data.news_sync_times.get('urban-renewal-land-development') %}
+                            <span class="news-sync-status">· Google News RSS 同步：{{ data.news_sync_times.get('urban-renewal-land-development') }}（台北時間）</span>
+                            {% endif %}
                         </h2>
                         <p class="text-theme-body mb-0 fs-6">追蹤都市更新、危老重建、土地開發與重大區域建設的最新動態。</p>
                     </div>
@@ -1167,6 +1189,9 @@
                     <div>
                         <h2 class="d-flex align-items-center gap-2 mb-1">
                             <i class="bi bi-journal-text text-danger fs-2"></i> 建築法規新聞
+                            {% if data.news_sync_times.get('building-regulations') %}
+                            <span class="news-sync-status">· Google News RSS 同步：{{ data.news_sync_times.get('building-regulations') }}（台北時間）</span>
+                            {% endif %}
                         </h2>
                         <p class="text-theme-body mb-0 fs-6">整理建築管理、使用執照、消防、耐震及相關法規政策的最新消息。</p>
                     </div>
@@ -1411,10 +1436,10 @@
                         class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary">
                         <div class="d-flex align-items-center gap-2">
                             <i class="bi bi-newspaper text-info fs-3"></i>
-                            <div>
-                                <h3 class="h4 fw-bold text-theme-heading mb-0">新聞報導</h3>
-                                {% if data.jensen_news_updated_at %}
-                                <small class="text-theme-muted">Google News RSS 同步：{{ data.jensen_news_updated_at }}（台北時間）</small>
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                <h3 class="h4 fw-bold text-theme-heading mb-0">AI 趨勢新聞</h3>
+                                {% if data.news_sync_times.get('jensen-ai-trends') %}
+                                <span class="news-sync-status">· Google News RSS 同步：{{ data.news_sync_times.get('jensen-ai-trends') }}（台北時間）</span>
                                 {% endif %}
                             </div>
                         </div>
