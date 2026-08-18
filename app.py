@@ -536,6 +536,17 @@ def get_portal_data():
         + ai_trends_news
     )
 
+    news_sync_times = {
+        category_slug: synced_at.astimezone(timezone(timedelta(hours=8))).strftime("%Y-%m-%d %H:%M")
+        for category_slug, synced_at in database_data.get("news_sync_times", {}).items()
+    }
+    # Lets local previews show the same heading treatment without requiring a
+    # connection to the production database. This variable is never set on NAS.
+    local_preview_sync_at = os.getenv("LOCAL_PREVIEW_SYNC_AT")
+    if local_preview_sync_at:
+        for category_slug in NEWS_FEEDS:
+            news_sync_times.setdefault(category_slug, local_preview_sync_at)
+
     # 回傳資料字典
     return {
         # 回傳英雄區資訊
@@ -543,10 +554,7 @@ def get_portal_data():
         # 回傳 AI 趨勢影音
         "ai_trends_videos": ai_trends_videos,
         # 回傳各新聞分類的最後成功同步時間
-        "news_sync_times": {
-            category_slug: synced_at.astimezone(timezone(timedelta(hours=8))).strftime("%Y-%m-%d %H:%M")
-            for category_slug, synced_at in database_data.get("news_sync_times", {}).items()
-        },
+        "news_sync_times": news_sync_times,
         # 回傳 AI 趨勢新聞
         "ai_trends_news": ai_trends_news,
         # 回傳不動產新聞
